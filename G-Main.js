@@ -4,7 +4,7 @@ const fs = require('fs');
 (async () => {
     const browser = await chromium.launch();
     const page = await browser.newPage();
-    await page.goto('https://leetcode.com/problems/median-of-two-sorted-arrays/solutions/?orderBy=newest_to_oldest');
+    await page.goto('https://leetcode.com/problems/n-queens/solutions/?orderBy=newest_to_oldest');
 
     await page.waitForTimeout(3000);
 
@@ -48,6 +48,15 @@ const fs = require('fs');
         const solutionId = pathSegments[pathSegments.indexOf("solutions") + 1];
 
         const reconstructedString = `${problemName}${solutionId}`;
+
+        // If there is more than one language, click the Rust button
+        const rustButton = await page.$('div.relative.cursor-pointer.px-3.py-3.text-label-4.dark\\:text-dark-label-4.hover\\:text-label-1.dark\\:hover\\:text-dark-label-1.GMIHh:has-text("Rust")');
+        if (rustButton) {
+            await rustButton.click();
+            console.log('Clicked Rust hidden button');
+        } else {
+            console.log('Rust button is visible or there is only one language');
+        }
 
         const dataElement = await page.$('.language-rust');
         await page.waitForTimeout(3000);
