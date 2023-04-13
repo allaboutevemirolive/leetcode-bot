@@ -27,7 +27,7 @@ const fs = require('fs');
         // we need to roll back to the original page, to load  "element" and "text"
         await page.goto('https://leetcode.com/problemset/all/?difficulty=HARD&page=1');
         await page.waitForTimeout(5000);
-        
+
         console.log(match);
         const string1 = match;
         const string2 = `a[href="${new URL(string1).pathname}"]`;
@@ -146,7 +146,6 @@ const fs = require('fs');
 
 
     }
-
 
     await new Promise(() => { });
 })();
