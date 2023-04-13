@@ -47,7 +47,6 @@ const fs = require('fs');
         console.log('Links scraped');
 
         for (const link of links) {
-            // link
             await page.goto(link);
             await page.waitForTimeout(3000);
 
@@ -73,6 +72,7 @@ const fs = require('fs');
                 await page.waitForTimeout(3000);
 
                 const folderName = 'myFolder';
+                const fileName = 'myFile.txt';
 
                 fs.mkdir(folderName, (err) => {
                     if (err && err.code !== 'EEXIST') {
@@ -84,7 +84,7 @@ const fs = require('fs');
                             throw err;
                         }
 
-                        console.log(`File ${reconstructedString} saved inside ${folderName} folder.`);
+                        console.log(`File ${fileName} saved inside ${folderName} folder.`);
                     });
                 });
 

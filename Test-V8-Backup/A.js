@@ -31,13 +31,21 @@ const fs = require('fs');
         const formattedTitle = text.trim().replace(/\n/g, '. ');
         const title = formattedTitle ? formattedTitle.split('.')[1].trim().replace(/^-+|-+$/g, '').replace(/ /g, '-') : 'unknown';
         const number = formattedTitle ? formattedTitle.split('.')[0].padStart(4, '0') : '0000';
+
+        // Exclusive for current match
         const formattedTitleWithDash = `${number}.${title}`;
+
+        // Change this
         mapping[match] = formattedTitle;
+
         // mapping[match] = 4. Median of Two Sorted Arrays
         // formattedTitleWithDash = 0004.Median-of-Two-Sorted-Arrays
         // console.log(formattedTitleWithDash);
         // console.log(mapping[match]);
+
         const folderName = formattedTitleWithDash;
+
+        // change this too
         const dataText = '`${number}.${title}`' + '`${number}.${title}`';
 
         fs.mkdir(folderName, (err) => {
@@ -45,6 +53,7 @@ const fs = require('fs');
                 throw err;
             }
 
+            // We also need to change this mapping[match]
             fs.writeFile(`${folderName}/${mapping[match]}.txt`, dataText, (err) => {
                 if (err) {
                     throw err;
@@ -55,7 +64,5 @@ const fs = require('fs');
         });
     }
 
-
-    // Keep the browser open
     await browser.close();
 })();

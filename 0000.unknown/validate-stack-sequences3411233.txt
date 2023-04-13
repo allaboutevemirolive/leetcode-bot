@@ -1,0 +1,17 @@
+// https://leetcode.com/problems/validate-stack-sequences/solutions/3411233/clean-and-concise-solution-with-explanation/
+impl Solution {
+    pub fn validate_stack_sequences(pushed: Vec<i32>, popped: Vec<i32>) -> bool {
+        let mut stack = vec![];
+        let mut pop_index = 0;
+
+        for push_value in pushed {
+            stack.push(push_value);
+            while !stack.is_empty() && stack.last() == popped.get(pop_index) {
+                stack.pop();
+                pop_index += 1;
+            }
+        }
+
+        stack.is_empty()
+    }
+}

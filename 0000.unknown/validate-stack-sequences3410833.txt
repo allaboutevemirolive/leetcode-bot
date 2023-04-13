@@ -1,0 +1,23 @@
+// https://leetcode.com/problems/validate-stack-sequences/solutions/3410833/rust-stack-solution/
+impl Solution {
+    pub fn validate_stack_sequences(pushed: Vec<i32>, popped: Vec<i32>) -> bool {
+        if pushed.len() != popped.len() {
+            return false;
+        }
+
+        let n = pushed.len();
+        let mut stack = vec![];
+        let mut i = 0;
+
+        for num in pushed {
+            stack.push(num);
+
+            while !stack.is_empty() && i < n && popped[i] == stack[stack.len() - 1] {
+                stack.pop();
+                i += 1;
+            }
+        }
+
+        i == n
+    }
+}

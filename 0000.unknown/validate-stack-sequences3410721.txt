@@ -1,0 +1,19 @@
+// https://leetcode.com/problems/validate-stack-sequences/solutions/3410721/rust-in-place-stack/
+impl Solution {
+    pub fn validate_stack_sequences(mut pushed: Vec<i32>, popped: Vec<i32>) -> bool {
+        let [mut n, mut j] = [0, 0];
+        for i in 0..pushed.len() {
+            if pushed[i] == popped[j] {
+                j += 1
+            } else {
+                while pushed.get(n-1) == popped.get(j) {
+                    n -= 1;
+                    j += 1;
+                }
+                pushed[n] = pushed[i];
+                n += 1;
+            }
+        }
+        pushed.iter().take(n).rev().eq(&popped[j..])
+    }
+}

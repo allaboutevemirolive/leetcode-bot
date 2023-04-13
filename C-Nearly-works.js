@@ -2,14 +2,60 @@ const { chromium } = require('playwright');
 const fs = require('fs');
 
 (async () => {
-    const browser = await chromium.launch();
+    const browser = await chromium.launch({ headless: false });
     const page = await browser.newPage();
-    // https://leetcode.com/problems/median-of-two-sorted-arrays/
-    const urls = fs.readFileSync('links.txt', 'utf8').trim().split('\n');
 
-    for (let i = 0; i < urls.length; i++) {
-        // https://leetcode.com/problems/median-of-two-sorted-arrays/solutions/?orderBy=newest_to_oldest
-        const targetUrl = urls[i] + "solutions/?orderBy=newest_to_oldest";;
+    await page.goto('https://leetcode.com/problemset/all/?difficulty=HARD&page=1');
+
+    await page.waitForTimeout(5000);
+
+    const matches = await page.$$eval('a[href*="/problems/"]', (links) =>
+        links
+            .filter((link) => {
+                const row = link.closest('div[role="row"]');
+                return (
+                    row &&
+                    row.querySelector('a[href*="/problems/"][class="h-5 hover:text-blue-s dark:hover:text-dark-blue-s"]') === link
+                );
+            })
+            .map((link) => link.href)
+    );
+
+    const mapping = {};
+
+    for (const match of matches) {
+        console.log(match);
+        const string1 = match;
+        const string2 = `a[href="${new URL(string1).pathname}"]`;
+        const element = await page.$(string2);
+        const text = await element.innerText();
+        const formattedTitle = text.trim().replace(/\n/g, '. ');
+        const title = formattedTitle ? formattedTitle.split('.')[1].trim().replace(/^-+|-+$/g, '').replace(/ /g, '-') : 'unknown';
+        const number = formattedTitle ? formattedTitle.split('.')[0].padStart(4, '0') : '0000';
+        const formattedTitleWithDash = `${number}.${title}`;
+        mapping[match] = formattedTitle;
+        // mapping[match] = 4. Median of Two Sorted Arrays
+        // formattedTitleWithDash = 0004.Median-of-Two-Sorted-Arrays
+        // console.log(formattedTitleWithDash);
+        // console.log(mapping[match]);
+        const folderName = formattedTitleWithDash;
+        const dataText = '`${number}.${title}`' + '`${number}.${title}`';
+
+        // fs.mkdir(folderName, (err) => {
+        //     if (err && err.code !== 'EEXIST') {
+        //         throw err;
+        //     }
+
+        //     fs.writeFile(`${folderName}/${mapping[match]}.txt`, dataText, (err) => {
+        //         if (err) {
+        //             throw err;
+        //         }
+
+        //         console.log(`File ${mapping[match]}} saved inside ${folderName} folder.`);
+        //     });
+        // });
+
+        const targetUrl = match + "solutions/?orderBy=newest_to_oldest";;
         await page.goto(targetUrl);
         await page.waitForTimeout(3000);
 
@@ -35,6 +81,7 @@ const fs = require('fs');
         await button_recent.click();
 
         await page.waitForTimeout(3000);
+
 
         const links = await page.$$eval('a[href*="/problems/"]', links =>
             links.filter(link => {
@@ -72,19 +119,18 @@ const fs = require('fs');
                 const dataText = await dataElement.innerText();
                 await page.waitForTimeout(3000);
 
-                const folderName = 'myFolder';
 
                 fs.mkdir(folderName, (err) => {
                     if (err && err.code !== 'EEXIST') {
                         throw err;
                     }
 
-                    fs.writeFile(`${folderName}/${reconstructedString}.txt`, `// ${link}\n${dataText}`, (err) => {
+                    fs.writeFile(`${formattedTitleWithDash}/${reconstructedString}.txt`, `// ${link}\n${dataText}`, (err) => {
                         if (err) {
                             throw err;
                         }
 
-                        console.log(`File ${reconstructedString} saved inside ${folderName} folder.`);
+                        console.log(`File ${reconstructedString} saved inside ${formattedTitleWithDash} folder.`);
                     });
                 });
 
@@ -93,7 +139,11 @@ const fs = require('fs');
             }
 
         }
+
+
     }
 
+
+    // Keep the browser open
     await new Promise(() => { });
 })();
