@@ -37,31 +37,13 @@ const fs = require('fs');
             .map(link => link.href)
     );
 
-    console.log('Scraped links');
-
-    for (const link of links) {
-        await page.goto(link);
-        await page.waitForTimeout(1000);
-
-        const pathSegments = link.split('/').filter(str => str !== "");
-        const problemName = pathSegments[pathSegments.indexOf("problems") + 1];
-        const solutionId = pathSegments[pathSegments.indexOf("solutions") + 1];
-
-        const reconstructedString = `${problemName}${solutionId}`;
-
-        const dataElement = await page.$('.language-rust');
-        await page.waitForTimeout(3000);
-        const dataText = await dataElement.innerText();
-        await page.waitForTimeout(3000);
-
-        fs.writeFile(`${reconstructedString}.txt`, dataText, (err) => {
-            if (err) {
-                console.error(err);
-                return;
-            }
-            console.log('Data saved to dataText.txt');
-        });
-    }
+    fs.writeFile('links.txt', links.join('\n'), (err) => {
+        if (err) {
+            console.error(err);
+            return;
+        }
+        console.log('Links saved to links.txt');
+    });
 
     await new Promise(() => { });
 })();
