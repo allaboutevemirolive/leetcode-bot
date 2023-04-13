@@ -9,7 +9,7 @@ const fs = require('fs');
 
     await page.waitForTimeout(5000);
 
-    const matches = await page.$$eval('a[href*="/problems/"]', (links) =>
+    const links = await page.$$eval('a[href*="/problems/"]', (links) =>
         links
             .filter((link) => {
                 const row = link.closest('div[role="row"]');
@@ -23,40 +23,18 @@ const fs = require('fs');
 
     const mapping = {};
 
-    for (const match of matches) {
-        const string1 = match;
+    for (const link of links) {
+        const string1 = link;
         const string2 = `a[href="${new URL(string1).pathname}"]`;
         const element = await page.$(string2);
         const text = await element.innerText();
         const formattedTitle = text.trim().replace(/\n/g, '. ');
-        const title = formattedTitle ? formattedTitle.split('.')[1].trim().replace(/^-+|-+$/g, '').replace(/ /g, '-') : 'unknown';
+        const title = formattedTitle ? formattedTitle.split('.')[1].replace(/ /g, '-') : 'unknown';
         const number = formattedTitle ? formattedTitle.split('.')[0].padStart(4, '0') : '0000';
         const formattedTitleWithDash = `${number}.${title}`;
-        mapping[match] = formattedTitle;
-        // mapping[match] = 4. Median of Two Sorted Arrays
-        // formattedTitleWithDash = 0004.Median-of-Two-Sorted-Arrays
-        // console.log(formattedTitleWithDash);
-        // console.log(mapping[match]);
-        const folderName = '`${number}.${title}`';
-        const dataText = '`${number}.${title}`' + '`${number}.${title}`';
-
-        fs.mkdir(folderName, (err) => {
-            if (err && err.code !== 'EEXIST') {
-                throw err;
-            }
-
-
-
-            fs.writeFile(`${folderName}/${mapping[match]}.txt`, `// ${match}\n${dataText}`, (err) => {
-                if (err) {
-                    throw err;
-                }
-
-                console.log(`File ${mapping[match]} saved inside ${folderName} folder.`);
-            });
-        });
+        mapping[link] = formattedTitle;
+        console.log(formattedTitleWithDash);
     }
-
 
     // Keep the browser open
     await new Promise(() => { });

@@ -46,7 +46,39 @@ const fs = require('fs');
 
         console.log('Links scraped');
 
+        const mapping = {};
+
+        const fs = require('fs');
+
         for (const link of links) {
+            const string1 = link;
+            const string2 = `a[href="${new URL(string1).pathname}"]`;
+            const element = await page.$(string2);
+            let text = '';
+
+            if (!element) {
+                continue; // skip if element is null
+            }
+
+            try {
+                text = await element.innerText();
+            } catch (error) {
+                console.log(error);
+                continue;
+            }
+
+            const formattedTitle = text.trim().replace(/\n/g, '. ');
+            const title = formattedTitle ? formattedTitle.split('.')[1]?.trim().replace(/^-+|-+$/g, '').replace(/ /g, '-') : 'unknown';
+            const number = formattedTitle ? formattedTitle.split('.')[0].padStart(4, '0') : '0000';
+
+            // Create the folder if it doesn't exist and remove special characters from the folder name
+            const formattedTitleWithDash = `${number}.${title}`.replace(/[^\w\s]/gi, '');
+            if (!fs.existsSync(formattedTitleWithDash)) {
+                fs.mkdirSync(formattedTitleWithDash);
+            }
+
+            mapping[link] = formattedTitle;
+
             await page.goto(link);
             await page.waitForTimeout(3000);
 
@@ -54,45 +86,23 @@ const fs = require('fs');
             const problemName = pathSegments[pathSegments.indexOf("problems") + 1];
             const solutionId = pathSegments[pathSegments.indexOf("solutions") + 1];
 
-            const reconstructedString = `${problemName}${solutionId}`;
-
-            // If there is more than one language, click the Rust button
-            const rustButton = await page.$('div.relative.cursor-pointer.px-3.py-3.text-label-4.dark\\:text-dark-label-4.hover\\:text-label-1.dark\\:hover\\:text-dark-label-1.GMIHh:has-text("Rust")');
-            if (rustButton) {
-                await rustButton.click();
-                console.log('Clicked Rust hidden button / there is more than one language');
-            } else {
-                console.log('Rust button is visible or there is only one language');
+            // Check if the element with `language-rust` class exists
+            const dataElement = await page.$('.language-rust');
+            if (dataElement === null) {
+                console.log(`${formattedTitleWithDash}: Rust solution not available`);
+                continue;
             }
 
-            try {
-                const dataElement = await page.$('.language-rust');
-                await page.waitForTimeout(3000);
-                const dataText = await dataElement.innerText();
-                await page.waitForTimeout(3000);
-
-                const folderName = 'myFolder';
-                const fileName = 'myFile.txt';
-
-                fs.mkdir(folderName, (err) => {
-                    if (err && err.code !== 'EEXIST') {
-                        throw err;
-                    }
-
-                    fs.writeFile(`${folderName}/${reconstructedString}.txt`, `// ${link}\n${dataText}`, (err) => {
-                        if (err) {
-                            throw err;
-                        }
-
-                        console.log(`File ${fileName} saved inside ${folderName} folder.`);
-                    });
-                });
-
-            } catch (error) {
-                console.log('Error occurred while saving data ${reconstructedString}\nLink: ${link}');
-            }
-
+            const dataText = await dataElement.innerText();
+            fs.writeFile(`${formattedTitleWithDash}/${problemName}${solutionId}.txt`, `// ${link}\n${dataText}`, (err) => {
+                if (err) {
+                    console.error(err);
+                    return;
+                }
+                console.log('Data saved to dataText.txt');
+            });
         }
+
     }
 
     await new Promise(() => { });

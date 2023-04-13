@@ -46,11 +46,24 @@ const fs = require('fs');
 
         console.log('Links scraped');
 
-        for (const link of links) {
-            await page.goto(link);
+
+        const matches = await page.$$eval('a[href*="/problems/"][class="h-5 hover:text-blue-s dark:hover:text-dark-blue-s"]', (links) =>
+            links.map((link) => {
+                let title = link.textContent.trim();
+                // remove symbols from title
+                title = title.replace(/[/:*?"<>|]/g, '');
+                return `${title}\n`;
+            })
+        );
+
+
+
+
+        for (let j = 0; j < links.length; j++) {
+            await page.goto(links[j]);
             await page.waitForTimeout(3000);
 
-            const pathSegments = link.split('/').filter(str => str !== "");
+            const pathSegments = links[j].split('/').filter(str => str !== "");
             const problemName = pathSegments[pathSegments.indexOf("problems") + 1];
             const solutionId = pathSegments[pathSegments.indexOf("solutions") + 1];
 
@@ -72,24 +85,23 @@ const fs = require('fs');
                 await page.waitForTimeout(3000);
 
                 const folderName = 'myFolder';
-                const fileName = 'myFile.txt';
 
                 fs.mkdir(folderName, (err) => {
                     if (err && err.code !== 'EEXIST') {
                         throw err;
                     }
 
-                    fs.writeFile(`${folderName}/${reconstructedString}.txt`, `// ${link}\n${dataText}`, (err) => {
+                    fs.writeFile(`${folderName}/${reconstructedString}.txt`, `// ${links[j]}\n${dataText}`, (err) => {
                         if (err) {
                             throw err;
                         }
 
-                        console.log(`File ${fileName} saved inside ${folderName} folder.`);
+                        console.log(`File ${reconstructedString} saved inside ${folderName} folder.`);
                     });
                 });
 
             } catch (error) {
-                console.log('Error occurred while saving data ${reconstructedString}\nLink: ${link}');
+                console.log('Error occurred while saving data ${reconstructedString}\nLink: ${links[j]}');
             }
 
         }

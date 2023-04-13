@@ -46,6 +46,7 @@ const fs = require('fs');
 
         console.log('Links scraped');
 
+        
         for (const link of links) {
             await page.goto(link);
             await page.waitForTimeout(3000);

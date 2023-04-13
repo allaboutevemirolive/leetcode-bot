@@ -46,7 +46,32 @@ const fs = require('fs');
 
         console.log('Links scraped');
 
+        const mapping = {};
+
+        let text = '';
         for (const link of links) {
+            const string1 = link;
+            const string2 = `a[href="${new URL(string1).pathname}"]`;
+            const element = await page.$(string2);
+            try {
+                const text = await element.innerText();
+
+            } catch (error) {
+                console.log(error);
+                continue;
+            }
+
+            const formattedTitle = text.trim().replace(/\n/g, '. ');
+            const title = formattedTitle ? formattedTitle.split('.')[1]?.trim().replace(/^-+|-+$/g, '').replace(/ /g, '-') : 'unknown';
+            const number = formattedTitle ? formattedTitle.split('.')[0].padStart(4, '0') : '0000';
+
+
+            mapping[link] = formattedTitle;
+
+            // console.log(formattedTitleWithDash);
+            const medianOfTwoSortedArrays = mapping['https://leetcode.com/problems/median-of-two-sorted-arrays/'];
+            console.log(medianOfTwoSortedArrays);
+
             await page.goto(link);
             await page.waitForTimeout(3000);
 
@@ -54,7 +79,7 @@ const fs = require('fs');
             const problemName = pathSegments[pathSegments.indexOf("problems") + 1];
             const solutionId = pathSegments[pathSegments.indexOf("solutions") + 1];
 
-            const reconstructedString = `${problemName}${solutionId}`;
+
 
             // If there is more than one language, click the Rust button
             const rustButton = await page.$('div.relative.cursor-pointer.px-3.py-3.text-label-4.dark\\:text-dark-label-4.hover\\:text-label-1.dark\\:hover\\:text-dark-label-1.GMIHh:has-text("Rust")');
@@ -65,33 +90,24 @@ const fs = require('fs');
                 console.log('Rust button is visible or there is only one language');
             }
 
+            const formattedTitleWithDash = `${number}.${title}`;
+            const reconstructedString = `${problemName}${solutionId}`;
             try {
                 const dataElement = await page.$('.language-rust');
                 await page.waitForTimeout(3000);
                 const dataText = await dataElement.innerText();
                 await page.waitForTimeout(3000);
 
-                const folderName = 'myFolder';
-                const fileName = 'myFile.txt';
-
-                fs.mkdir(folderName, (err) => {
-                    if (err && err.code !== 'EEXIST') {
-                        throw err;
+                fs.writeFile(`${formattedTitleWithDash}/${reconstructedString}.txt`, `// ${link}\n${dataText}`, (err) => {
+                    if (err) {
+                        console.error(err);
+                        return;
                     }
-
-                    fs.writeFile(`${folderName}/${reconstructedString}.txt`, `// ${link}\n${dataText}`, (err) => {
-                        if (err) {
-                            throw err;
-                        }
-
-                        console.log(`File ${fileName} saved inside ${folderName} folder.`);
-                    });
+                    console.log('Data saved to dataText.txt');
                 });
-
             } catch (error) {
                 console.log('Error occurred while saving data ${reconstructedString}\nLink: ${link}');
             }
-
         }
     }
 

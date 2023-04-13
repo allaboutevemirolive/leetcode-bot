@@ -37,7 +37,7 @@ const fs = require('fs');
         // formattedTitleWithDash = 0004.Median-of-Two-Sorted-Arrays
         // console.log(formattedTitleWithDash);
         // console.log(mapping[match]);
-        const folderName = '`${number}.${title}`';
+        const folderName = formattedTitleWithDash;
         const dataText = '`${number}.${title}`' + '`${number}.${title}`';
 
         fs.mkdir(folderName, (err) => {
@@ -45,19 +45,17 @@ const fs = require('fs');
                 throw err;
             }
 
-
-
-            fs.writeFile(`${folderName}/${mapping[match]}.txt`, `// ${match}\n${dataText}`, (err) => {
+            fs.writeFile(`${folderName}/${mapping[match]}.txt`, dataText, (err) => {
                 if (err) {
                     throw err;
                 }
 
-                console.log(`File ${mapping[match]} saved inside ${folderName} folder.`);
+                console.log(`File ${mapping[match]}} saved inside ${folderName} folder.`);
             });
         });
     }
 
 
     // Keep the browser open
-    await new Promise(() => { });
+    await browser.close();
 })();

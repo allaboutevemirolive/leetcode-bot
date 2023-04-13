@@ -79,7 +79,7 @@ const fs = require('fs');
                         throw err;
                     }
 
-                    fs.writeFile(`${folderName}/${reconstructedString}.txt`, `// ${link}\n${dataText}`, (err) => {
+                    fs.writeFile(`${folderName}/${fileName}`, `// ${link}\n${dataText}`, (err) => {
                         if (err) {
                             throw err;
                         }
