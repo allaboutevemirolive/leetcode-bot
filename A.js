@@ -56,14 +56,14 @@ const fs = require('fs');
             const formattedTitle = text.trim().replace(/\n/g, '. ');
             const title = formattedTitle ? formattedTitle.split('.')[1].trim().replace(/^-+|-+$/g, '').replace(/ /g, '-') : 'unknown';
             const number = formattedTitle ? formattedTitle.split('.')[0].padStart(4, '0') : '0000';
-            const formattedTitleWithDash = `${number}.${title}`;
+
+
             mapping[link] = formattedTitle;
-            console.log(formattedTitleWithDash);
-        }
 
+            // console.log(formattedTitleWithDash);
+            // const medianOfTwoSortedArrays = mapping['https://leetcode.com/problems/median-of-two-sorted-arrays/'];
+            // console.log(medianOfTwoSortedArrays);
 
-
-        for (const link of links) {
             await page.goto(link);
             await page.waitForTimeout(3000);
 
@@ -71,7 +71,7 @@ const fs = require('fs');
             const problemName = pathSegments[pathSegments.indexOf("problems") + 1];
             const solutionId = pathSegments[pathSegments.indexOf("solutions") + 1];
 
-            const reconstructedString = `${problemName}${solutionId}`;
+            
 
             // If there is more than one language, click the Rust button
             const rustButton = await page.$('div.relative.cursor-pointer.px-3.py-3.text-label-4.dark\\:text-dark-label-4.hover\\:text-label-1.dark\\:hover\\:text-dark-label-1.GMIHh:has-text("Rust")');
@@ -82,13 +82,15 @@ const fs = require('fs');
                 console.log('Rust button is visible or there is only one language');
             }
 
+            const formattedTitleWithDash = `${number}.${title}`;
+            const reconstructedString = `${problemName}${solutionId}`;
             try {
                 const dataElement = await page.$('.language-rust');
                 await page.waitForTimeout(3000);
                 const dataText = await dataElement.innerText();
                 await page.waitForTimeout(3000);
 
-                fs.writeFile(`${reconstructedString}.txt`, `// ${link}\n${dataText}`, (err) => {
+                fs.writeFile(`${formattedTitleWithDash}/${reconstructedString}.txt`, `// ${link}\n${dataText}`, (err) => {
                     if (err) {
                         console.error(err);
                         return;
@@ -98,7 +100,6 @@ const fs = require('fs');
             } catch (error) {
                 console.log('Error occurred while saving data ${reconstructedString}\nLink: ${link}');
             }
-
         }
     }
 
