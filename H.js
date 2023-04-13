@@ -4,7 +4,7 @@ const fs = require('fs');
 (async () => {
     const browser = await chromium.launch();
     const page = await browser.newPage();
-    await page.goto('https://leetcode.com/problems/median-of-two-sorted-arrays/solutions/?orderBy=newest_to_oldest');
+    await page.goto('https://leetcode.com/problems/n-queens/solutions/?orderBy=newest_to_oldest');
 
     await page.waitForTimeout(3000);
 
