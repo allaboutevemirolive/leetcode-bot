@@ -1,0 +1,21 @@
+// https://leetcode.com/problems/trapping-rain-water/solutions/2695585/two-pointers-rust-solution/
+impl Solution {
+    pub fn trap(height: Vec<i32>) -> i32 {
+        let mut water = 0;
+        let (mut left_boundary, mut right_boundary) = (0, 0);
+
+        let (mut l, mut r) = (0, height.len() - 1);
+        while l < r {
+            if height[l] < height[r] {
+                left_boundary = left_boundary.max(height[l]);
+                water += left_boundary - height[l];
+                l += 1
+            } else {
+                right_boundary = right_boundary.max(height[r]);
+                water += right_boundary - height[r];
+                r -= 1
+            }
+        }
+        water
+    }
+}

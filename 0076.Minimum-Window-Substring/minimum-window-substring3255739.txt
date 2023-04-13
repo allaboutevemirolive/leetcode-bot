@@ -1,0 +1,54 @@
+// https://leetcode.com/problems/minimum-window-substring/solutions/3255739/straightforward-left-right-cursor/
+impl Solution {
+    pub fn min_window(s: String, t: String) -> String {
+        if s.is_empty() || t.is_empty() || s.len() < t.len() {
+            String::new()
+        }
+        else {
+            let mut target = [0; (b'z' - b'A' + 1) as usize];
+            let c2idx = |c: char| {(c as u8 - b'A') as usize};
+
+            for c in t.chars() {
+                target[c2idx(c)] += 1;
+            }
+
+            let mut left = 0;
+            let mut right = 0;
+            let mut count = t.len();
+            let mut min_left = 0;
+            let mut min_right = s.len();
+
+            while right < s.len() {
+                let c = s[right..=right].chars().next().unwrap();
+                let idx = c2idx(c);
+                count -= if target[idx] > 0 {1} else {0};
+
+                // if the target[idx] goes negative, it means there are more character in s than t
+                target[idx] -= 1;
+
+                // found all characters in t, shrink the left side of windows
+                while count == 0 {
+                    if right - left < min_right - min_left {
+                        min_left = left;
+                        min_right = right;
+                    }
+
+                    // move left to start find new window
+                    let c = s[left..=left].chars().next().unwrap();
+                    let idx = c2idx(c);
+
+                    count += if target[idx] == 0 {1} else {0};
+                    target[idx] += 1;
+                    left += 1
+                }
+
+                right += 1
+            }
+
+            s.get(min_left..=min_right).unwrap_or("").to_string()
+
+            
+        }
+
+    }
+}

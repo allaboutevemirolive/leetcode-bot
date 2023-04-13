@@ -1,0 +1,27 @@
+// https://leetcode.com/problems/minimum-window-substring/solutions/2731815/rust-20-lines-9-mc-easy-to-understand/
+use std::collections::HashMap;
+
+impl Solution {
+    pub fn min_window(s: String, t: String) -> String {
+        let mut m = HashMap::new();
+        t.bytes().for_each(|c| *m.entry(c).or_insert(0) += 1);
+
+        let mut rez: Option<&[u8]> = None;
+        let mut beg = 0;
+        let s = s.into_bytes();
+
+        for (end, &end_char) in s.iter().enumerate() {
+            m.entry(end_char).and_modify(|n| *n -= 1);
+            if rez.is_some() || m.values().all(|n| *n <= 0) {
+                while m.get(&s[beg]).copied().unwrap_or(-42) < 0 {
+                    m.entry(s[beg]).and_modify(|n| *n += 1);
+                    beg += 1;
+                }
+                if rez.is_none() || rez.unwrap().len() > end - beg {
+                    rez = Some(&s[beg..=end]);
+                }
+            }
+        }
+        String::from_utf8(rez.unwrap_or_default().to_vec()).unwrap()
+    }
+}

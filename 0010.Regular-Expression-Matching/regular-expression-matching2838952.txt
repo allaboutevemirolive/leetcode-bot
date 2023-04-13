@@ -1,0 +1,61 @@
+// https://leetcode.com/problems/regular-expression-matching/solutions/2838952/rust-dp-with-comments/
+impl Solution {
+    pub fn is_match(s: String, p: String) -> bool {
+        let (p_len, s_len) = (p.len(), s.len());
+        // dp[i][j] ==> whether the string slice [0..i] matched the pattern slice [0..j]
+        let mut dp = vec![vec![false; p_len+1]; s_len+1];
+        dp[0][0] = true;
+        
+        let s = s.chars().collect::<Vec<char>>();
+        let p = p.chars().collect::<Vec<char>>();
+        
+        // p == 'a*b*' s == '' (*'s always match the empty string!)
+        for j in 2..=p_len {
+            if p[j-1] == '*' && dp[0][j-2] == true {
+                dp[0][j] = true;
+            }
+        }
+        
+        for j in 1..=p_len {
+            for i in 1..=s_len {
+                // catchall case (e.g., '...|.' '...|x')
+                // and
+                // equality case (e.g., '...|a' '...|a')
+                // both just piggyback off of the
+                // previously-calculated value
+                // (i.e., '...' '...' in the case above)
+                if p[j-1] == s[i-1] || p[j-1] == '.' {
+                    dp[i][j] = dp[i-1][j-1];
+                    continue;
+                }
+                
+                if p[j-1] == '*' {                    
+                    // 0-match! (e.g., '...|a*' '...|')
+                    //
+                    // try to check if we can use a 0-match
+                    // by checking if the pattern before the 'x*'
+                    // matches the current string!
+                    if dp[i][j-2] == true {
+                        dp[i][j] = true;
+                        continue;
+                    }
+                    
+                    // single and multi-matches!
+                    // 
+                    // current pattern matches previous string
+                    // (hence the multi-match) and either we
+                    // have a catchall (e.g., '...|.*' and '...|a')
+                    // OR the previous current string character
+                    // matches the current pattern character
+                    // (e.g., '...|a*' and '...|a')
+                    if dp[i-1][j] == true {
+                        dp[i][j] = (p[j-2] == '.' || p[j-2] == s[i-1]);
+                        continue;
+                    }
+                }
+            }
+        }
+                
+        dp[s_len][p_len]
+    }
+}

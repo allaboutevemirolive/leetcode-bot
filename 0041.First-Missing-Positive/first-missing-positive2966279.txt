@@ -1,0 +1,31 @@
+// https://leetcode.com/problems/first-missing-positive/solutions/2966279/runtime-3ms-97-memory-3mb-76-with-binary-search/
+impl Solution {
+	pub fn first_missing_positive(mut nums: Vec<i32,>,) -> i32 {
+		nums.sort();
+		let len = nums.len();
+		let (mut l, mut r,) = (0, len,);
+		if nums[r - 1] <= 0 {
+			return 1;
+		}
+
+		// find smallest positive element
+		while nums[l] <= 0 {
+			let mid = (l + r) / 2;
+			if nums[mid] <= 0 {
+				l = mid + 1;
+			} else {
+				r = mid;
+			}
+		}
+
+		if nums[l] > 1 {
+			return 1;
+		}
+
+		while l + 1 < len && nums[l + 1] - nums[l] <= 1 {
+			l += 1;
+		}
+
+		nums[l] + 1
+	}
+}

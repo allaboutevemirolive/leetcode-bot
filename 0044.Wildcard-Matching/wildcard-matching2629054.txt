@@ -1,0 +1,243 @@
+// https://leetcode.com/problems/wildcard-matching/solutions/2629054/3ms-97-rust-solution/
+#[derive(PartialEq, Eq, Debug)]
+enum SpecificChar {
+    Any(usize),
+    Seq(Vec<u8>),
+}
+#[derive(PartialEq, Eq, Debug)]
+struct SeqSpecificChar {
+    seq: Vec<SpecificChar>,
+    len: usize,
+}
+#[derive(PartialEq, Eq, Debug)]
+enum CharSeq {
+    AsteriskChar,
+    Seq(SeqSpecificChar),
+}
+#[inline(always)]
+fn try_empty_specific_char_seq(
+    specific_char_seq: Vec<u8>,
+    mut char_seq: SeqSpecificChar,
+) -> (Vec<u8>, SeqSpecificChar) {
+    if specific_char_seq.len() > 0 {
+        char_seq.len += specific_char_seq.len();
+        char_seq.seq.push(SpecificChar::Seq(specific_char_seq));
+        return (Vec::new(), char_seq);
+    }
+    return (specific_char_seq, char_seq);
+}
+#[inline(always)]
+fn try_empty_n_any_char(
+    mut n_any_char: usize,
+    mut char_seq: SeqSpecificChar,
+) -> (usize, SeqSpecificChar) {
+    if n_any_char > 0 {
+        char_seq.seq.push(SpecificChar::Any(n_any_char));
+        char_seq.len += n_any_char;
+        n_any_char = 0;
+    }
+    (n_any_char, char_seq)
+}
+fn split_pattern<'a>(p: String) -> Vec<CharSeq> {
+    let mut result = Vec::new();
+    let chars = p.into_bytes();
+    let mut i = 0;
+    let mut n_any_char = 0;
+    let mut specific_char_seq: Vec<u8> = Vec::new();
+    let mut char_seq = SeqSpecificChar {
+        seq: Vec::new(),
+        len: 0,
+    };
+    let mut prev_char = None;
+    loop {
+        if i >= chars.len() {
+            char_seq = try_empty_specific_char_seq(specific_char_seq, char_seq).1;
+            char_seq = try_empty_n_any_char(n_any_char, char_seq).1;
+            if char_seq.len > 0 {
+                result.push(CharSeq::Seq(char_seq));
+            }
+            return result;
+        }
+        let ch = chars[i];
+        if chars[i] == b'*' {
+            if prev_char == Some(b'*') {
+                i += 1;
+                continue;
+            }
+            let tmp1 = try_empty_specific_char_seq(specific_char_seq, char_seq);
+            specific_char_seq = tmp1.0;
+            char_seq = tmp1.1;
+            let tmp2 = try_empty_n_any_char(n_any_char, char_seq);
+            n_any_char = tmp2.0;
+            char_seq = tmp2.1;
+            if char_seq.len > 0 {
+                result.push(CharSeq::Seq(char_seq));
+                char_seq = SeqSpecificChar {
+                    seq: Vec::new(),
+                    len: 0,
+                };
+            }
+            result.push(CharSeq::AsteriskChar);
+            i += 1;
+        } else {
+            match ch {
+                b'?' => {
+                    i += 1;
+                    n_any_char += 1;
+                    let tmp = try_empty_specific_char_seq(specific_char_seq, char_seq);
+                    specific_char_seq = tmp.0;
+                    char_seq = tmp.1;
+                }
+                _ => {
+                    i += 1;
+                    specific_char_seq.push(ch);
+                    let tmp = try_empty_n_any_char(n_any_char, char_seq);
+                    n_any_char = tmp.0;
+                    char_seq = tmp.1;
+                }
+            }
+        }
+        prev_char = Some(ch);
+    }
+}
+fn match_char_seq(s: &[u8], char_seq: &SeqSpecificChar) -> bool {
+    let mut i = 0;
+    if s.len() < char_seq.len {
+        return false;
+    }
+    for specific_char in char_seq.seq.iter() {
+        match specific_char {
+            SpecificChar::Any(n) => {
+                i += n;
+                if i > s.len() {
+                    return false;
+                }
+            }
+            SpecificChar::Seq(seq) => {
+                if i + seq.len() > s.len() {
+                    return false;
+                }
+                if &s[i..i + seq.len()] != seq {
+                    return false;
+                }
+                i += seq.len();
+            }
+        }
+    }
+    i == s.len()
+}
+fn max_match_len(
+    string: &[u8],
+    string_index: usize,
+    pattern: &[CharSeq],
+    pattern_index: usize,
+) -> usize {
+    let mut len_of_chars_left_in_pattern = 0;
+    for i in pattern_index..pattern.len() {
+        match &pattern[i] {
+            CharSeq::Seq(seq) => {
+                len_of_chars_left_in_pattern += seq.len;
+            }
+            _ => {
+                break;
+            }
+        }
+    }
+    let max_match_len = string.len() - string_index - len_of_chars_left_in_pattern;
+    if max_match_len < 0 {
+        return 0;
+    }
+    max_match_len
+}
+
+fn get_max_len_pattern_part(pattern: &[CharSeq]) -> (usize, usize) {
+    let mut max_len = 0;
+    let mut max_len_index = 0;
+    let mut i = 0;
+    while i < pattern.len() {
+        match &pattern[i] {
+            CharSeq::Seq(seq) => {
+                if seq.len > max_len {
+                    max_len = seq.len;
+                    max_len_index = i;
+                }
+            }
+            _ => {}
+        }
+        i += 1;
+    }
+    (max_len, max_len_index)
+}
+
+fn max_search(
+    pattern: &[CharSeq],
+    string: &[u8],
+    // mut string_pointer: usize,
+    // mut pattern_pointer: usize,
+) -> bool {
+    //println!("pattern: {:?}", pattern);
+    //println!("string: {:?}", string);
+    if pattern.len() == 0 {
+        return string.len() == 0;
+    }
+    let mut tmp = get_max_len_pattern_part(pattern);
+    let mut max_len = tmp.0;
+    let mut max_len_index = tmp.1;
+    if max_len == 0 {
+        //only asterisk
+        return true;
+    }
+    match &pattern[max_len_index] {
+        CharSeq::Seq(seq) => {
+            let mut i = 0;
+            if max_len > string.len() {
+                return false;
+            }
+            while i <= string.len() - max_len {
+                if match_char_seq(&string[i..i + max_len], seq) {
+                    if max_search(&pattern[..max_len_index], &string[..i])
+                        && max_search(&pattern[max_len_index + 1..], &string[i + max_len..])
+                    {
+                        return true;
+                    }
+                }
+                i += 1;
+            }
+            return false;
+        }
+        _ => {
+            return false;
+        }
+    }
+    // find match for max_len pattern part in string
+}
+
+impl Solution {    
+    pub fn is_match(s: String, p: String) -> bool {
+        let mut pattern = split_pattern(p);
+        let mut string = s.into_bytes();
+        let mut string_pointer = 0;
+        let mut pattern_pointer = 0;
+        // remove last item if it is CharSeq::Seq
+        // so we can be sure it ends with asterisk
+        if pattern.len() > 0 {
+            let last_item = pattern.pop();
+            match last_item {
+                Some(CharSeq::Seq(seq)) => {
+                    if seq.len > string.len()
+                        || !match_char_seq(&string[string.len() - seq.len..], &seq)
+                    {
+                        return false;
+                    }
+                    string = string[..string.len() - seq.len].to_vec();
+                }
+                _ => {
+                    pattern.push(last_item.unwrap());
+                }
+            }
+        }
+        //println!("pattern: {:?}", pattern);
+        //println!("string: {:?}", string);
+        return max_search(&pattern, &string);
+    }
+}

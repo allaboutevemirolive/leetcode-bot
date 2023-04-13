@@ -1,0 +1,41 @@
+// https://leetcode.com/problems/first-missing-positive/solutions/3157345/rust-constant-space-with-some-hacks/
+impl Solution {
+    pub fn first_missing_positive(nums: Vec<i32>) -> i32 {
+        let mut nums = nums;
+        // set all -ve and large numbers to 0 - doesn't change result
+        (0..nums.len()).for_each(|i| {
+            if nums[i] < 0 || nums[i] > nums.len() as i32 {
+                nums[i] = 0;
+            }
+        });
+        // nums[i-1] stores if i has been seen in the array if non zero
+        let mut i = 0;
+        while i < nums.len() {
+            // if the number is at its index itself or 0
+            if nums[i]-1 == i as i32 || nums[i] == 0 {
+                i += 1;
+                continue;
+            }
+            let j = (nums[i]-1) as usize;
+            // if both are same - one can be zeored
+            if nums[i] == nums[j] {
+                nums[i] = 0;
+            }
+            // only swap with not seen indexes
+            if j > i {
+                nums.swap(i, j);
+            } else {
+                // else increment count and put 0
+                nums[j] += 1;
+                nums[i] = 0;
+            }
+        }
+        // println!("{nums:?}");
+        for i in 0..nums.len() {
+            if nums[i] == 0 {
+                return 1 + i as i32;
+            }
+        }
+        1 + nums.len() as i32
+    }
+}

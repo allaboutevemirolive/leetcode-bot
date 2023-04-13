@@ -1,0 +1,37 @@
+// https://leetcode.com/problems/maximal-rectangle/solutions/3133444/rectangles-in-histogram-solution/
+impl Solution {
+    pub fn maximal_rectangle(matrix: Vec<Vec<char>>) -> i32 {
+        let mut histogram = vec![0; matrix[0].len()];
+        let mut max_area = 0;
+        for col in matrix {
+            for (i, c) in col.into_iter().enumerate() {
+                histogram[i] = if c == '0' { 0 } else { histogram[i] + 1 }
+            }
+            max_area = i32::max(max_area, Self::max_rect(&histogram));
+        }
+        max_area
+    }
+
+    fn max_rect(histogram: &Vec<i32>) -> i32 {
+        let (mut max_area, mut width, n) = (0, 0, histogram.len());
+        let mut stack = Vec::with_capacity(n);
+
+        (0..n).for_each(|cur| {
+            while let Some(&last) = stack.last() {
+                if histogram[last] > histogram[cur] {
+                    stack.pop();
+                    width = if let Some(&prev) = stack.last() { cur - prev - 1 } else { cur };
+                    max_area = i32::max(max_area, width as i32 * histogram[last]);
+                } else { break; }
+            }
+            stack.push(cur);
+        });
+
+        while let Some(last) = stack.pop() {
+            width = if let Some(&prev) = stack.last() { n - prev - 1 } else { n };
+            max_area = i32::max(max_area, width as i32 * histogram[last]);
+        }
+
+        max_area
+    }
+}

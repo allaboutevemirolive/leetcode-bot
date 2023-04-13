@@ -1,0 +1,56 @@
+// https://leetcode.com/problems/trapping-rain-water/solutions/2733733/oddly-simple-solution-surprised-i-haven-t-seen-this-discussed/
+impl Solution {
+
+    pub fn findmax(height: &Vec<i32>) -> usize {
+        let len = height.len();
+        let mut max = 0;
+        let mut maxidx = 0;
+        for i in 0..len {
+            let h = height[i];
+            if h > max {
+                max = h;
+                maxidx = i;
+            }
+        }
+        return maxidx;
+    }
+
+    fn passforth(height: &[i32]) -> i32 {
+        let mut prevmax = 0;
+        let mut amount = 0;
+        let len = height.len();
+        for i in 0..len {
+            let h = height[i];
+            if h > prevmax {
+                prevmax = h;
+            } else {
+                amount += prevmax - h; 
+            }
+        }
+        return amount
+    }
+
+    fn passback(height: &[i32]) -> i32 {
+        let mut prevmax = 0;
+        let mut amount = 0;
+        let len = height.len();
+        for i in (0..len).rev() {
+            let h = height[i];
+            if h > prevmax {
+                prevmax = h;
+            } else {
+                amount += prevmax - h;
+            }
+        }
+        return amount
+    }
+
+    pub fn trap(height: Vec<i32>) -> i32 {
+        let maxidx = Self::findmax(&height);
+        let (lower, upper) = height.as_slice().split_at(maxidx);
+        let mut amount = 0;
+        amount += Self::passforth(lower);
+        amount += Self::passback(upper);
+        return amount
+    }
+}

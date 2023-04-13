@@ -1,0 +1,20 @@
+// https://leetcode.com/problems/merge-k-sorted-lists/solutions/2957924/rust-short-and-sweet-based-on-max-heap/
+impl Solution {
+    pub fn merge_k_lists(lists: Vec<Option<Box<ListNode>>>) -> Option<Box<ListNode>> {
+        let mut pq = std::collections::BinaryHeap::new();
+        let mut ans = None;
+        
+        for mut list in lists {
+            while let Some(node) = list {
+                pq.push(node.val);
+                list = node.next;
+            }
+        }
+
+        while let Some(val) = pq.pop() {
+            ans = Some(Box::new(ListNode { val, next: ans }));
+        }
+
+        ans
+    }
+}

@@ -1,0 +1,47 @@
+// https://leetcode.com/problems/first-missing-positive/solutions/1653781/rust-o-n-o-1-with-options-for-clarity/
+impl Solution {
+    pub fn optify(nums: &Vec<i32>, x: i32) -> Option<i32> {
+        if x > 0 && x < (nums.len() as i32) + 1 {
+            Some(x)
+        } else {
+            None
+        }
+    }
+
+    pub fn take(nums: &mut Vec<i32>, ix: usize) -> Option<i32> {
+        let x = nums[ix];
+
+        nums[ix] = 0;
+        Solution::optify(nums, x)
+    }
+
+    pub fn put(nums: &mut Vec<i32>, x: i32) -> Option<i32> {
+        let mut was_there = None;
+
+        if let Some(x) = Solution::optify(nums, x){
+            let ix = (x as usize) - 1;
+            was_there = Solution::take(nums, ix);
+            nums[ix] = x;
+        }
+        was_there
+    }
+
+    pub fn first_missing_positive(mut nums: Vec<i32>) -> i32 {
+        for i in 0..nums.len() {
+            if let Some(mut x) = Solution::take(&mut nums, i) {
+                while let Some(y) = Solution::put(&mut nums, x) {
+                    if x == y {
+                        break;
+                    }
+                    x = y;
+                }
+            }
+        }
+        for i in 0..nums.len() {
+            if nums[i] != (i+1) as i32 {
+                return (i+1) as i32;
+            }
+        }
+        (nums.len() + 1) as i32
+    }
+}

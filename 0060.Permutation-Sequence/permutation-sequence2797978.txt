@@ -1,0 +1,36 @@
+// https://leetcode.com/problems/permutation-sequence/solutions/2797978/fast-recursive-solution/
+// Pre-computed factorials j!, 0<=j<=9
+static FACTORIAL: [i32; 10] = [0, 1, 2, 6, 24, 120, 720, 5_040, 40_320, 362_880];
+
+impl Solution {
+    pub fn get_permutation(n: i32, k: i32) -> String {
+        let mut res: Vec<i32> = vec![];
+        let mut nums: Vec<i32> = (1..n + 1).collect();
+
+        Self::compute(&mut res, &mut nums, n, k, 0);
+
+        res.iter().fold(String::new(), |acc, &e| {
+            format!("{}{}", acc, &e.to_string())
+        })
+    }
+
+    fn compute(res: &mut Vec<i32>, nums: &mut Vec<i32>, n: i32, k: i32, k_curr: i32) {
+        if n == 1 {
+            // Base case, just get the final remaining digit
+            res.push(nums[0]);
+            return;
+        }
+        let k_inc = FACTORIAL[n as usize - 1];
+        let mut k_curr = k_curr;
+
+        for i in 0..n as usize {
+            k_curr += k_inc;
+
+            if k <= k_curr {
+                res.push(nums.remove(i));
+                Self::compute(res, nums, n - 1, k, k_curr - k_inc);
+                break;
+            }
+        }
+    }
+}

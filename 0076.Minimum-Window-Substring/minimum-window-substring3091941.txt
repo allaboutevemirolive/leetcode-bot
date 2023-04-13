@@ -1,0 +1,56 @@
+// https://leetcode.com/problems/minimum-window-substring/solutions/3091941/rust-100-sliding-window-linear-time-constant-space/
+
+impl Solution {
+    pub fn min_window(s: String, t: String) -> String {
+        // Early exit for empty string
+        if t.to_owned() == "" {
+            return "".to_string();
+        }
+
+        // Array for storing counts from upper-case A to lower-case z in ASCII code order
+        let (mut sw_counts, mut t_counts) : ([usize;58], [usize;58]) = ([0;58], [0;58]);
+
+        // Convert to Vec<char> for repeated iteration
+        let (s, t) = (s.chars().collect::<Vec<_>>(), t.chars().collect::<Vec<_>>());
+
+        // Get t counts
+        t.into_iter().for_each(|c| t_counts[(c as u8 - b'A') as usize] += 1);
+
+        // How many unique characters need to be present in the substring
+        let need = t_counts.into_iter().filter(|&&x| x != 0 as usize).count();
+
+        // l and r indices corresponding to minimum window. Initialize to invalid r for special casing substring not present case
+        let (mut minw_l, mut minw_r) = (0, s.len());
+
+        (0..s.len()).fold((0, 0), |(mut have, mut l), r| {
+            // If we satisfy required char count by visiting the new right character, increment have count
+            let ir = (s[r] as u8 - b'A') as usize;
+            sw_counts[ir] += 1;
+            if t_counts[ir] > 0 && sw_counts[ir] == t_counts[ir] {
+                have += 1;
+            }
+            // Since we have found a window with substring try to trim from left until we no longer can
+            while have == need {
+                let il = (s[l] as u8 - b'A') as usize;
+
+                let (cur_len, min_len) = (r - l + 1, minw_r - minw_l + 1);
+                // Found a valid window with new min length
+                if cur_len < min_len {
+                    minw_l = l;
+                    minw_r = r;
+                }
+
+                // Start pruning from left
+                sw_counts[il] -= 1;
+                if t_counts[il] > 0 && sw_counts[il] < t_counts[il] {
+                    have -= 1;
+                }
+                l += 1;
+                
+            }
+            (have, l)
+        });
+// What if you never found the substring
+        if minw_r != s.len() {s[minw_l..=minw_r].into_iter().collect()} else {"".to_string()}
+    }
+}

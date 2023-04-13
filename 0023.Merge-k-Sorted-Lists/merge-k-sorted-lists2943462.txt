@@ -1,0 +1,56 @@
+// https://leetcode.com/problems/merge-k-sorted-lists/solutions/2943462/simple-solution-using-merge-for-two-lists/
+// Definition for singly-linked list.
+// #[derive(PartialEq, Eq, Clone, Debug)]
+// pub struct ListNode {
+//   pub val: i32,
+//   pub next: Option<Box<ListNode>>
+// }
+// 
+// impl ListNode {
+//   #[inline]
+//   fn new(val: i32) -> Self {
+//     ListNode {
+//       next: None,
+//       val
+//     }
+//   }
+// }
+impl Solution {
+    pub fn merge_k_lists(mut lists: Vec<Option<Box<ListNode>>>) -> Option<Box<ListNode>> {
+        match lists.pop() {
+            Some(list) => 
+        return merge_two_lists(list, Solution::merge_k_lists(lists)),
+            None => return None,
+        };
+    }
+}
+
+fn merge_two_lists(list1: Option<Box<ListNode>>, list2: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
+        match (list1, list2) {
+            (Some(node1), Some(node2)) => {
+                if node1.val < node2.val {
+                    return Some(Box::new(ListNode {
+                        val: node1.val,
+                        next: merge_two_lists(node1.next, Some(node2))
+                    }));
+                } else {
+                    return Some(Box::new(ListNode {
+                        val: node2.val,
+                        next: merge_two_lists(Some(node1), node2.next)
+                    }));
+                }
+            },
+            (Some(node), None) => return Some(Box::new(ListNode {
+                val: node.val,
+                next: node.next,
+            })),
+            (None, Some(node)) => return Some(Box::new(ListNode {
+                val: node.val,
+                next: node.next,
+            })),
+            _ => return None,
+        }
+    }
+
+
+

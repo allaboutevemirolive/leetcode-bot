@@ -1,0 +1,78 @@
+// https://leetcode.com/problems/median-of-two-sorted-arrays/solutions/3374001/mergesort-iterator-approach/
+struct MergeSort {
+    pos1: usize,
+    pos2: usize,
+    len1: usize,
+    len2: usize,
+    exhausted1: bool,
+    exhausted2: bool,
+    nums1: Vec<i32>,
+    nums2: Vec<i32>,
+}
+
+impl MergeSort {
+    fn new(nums1: Vec<i32>, nums2: Vec<i32>) -> Self {
+        MergeSort {
+            pos1: 0,
+            pos2: 0,
+            len1: nums1.len(),
+            len2: nums2.len(),
+            exhausted1: nums1.len() == 0,
+            exhausted2: nums2.len() == 0,
+            nums1,
+            nums2,
+        }
+    }
+
+    fn advance1(&mut self) -> i32 {
+        self.pos1 += 1;
+        if self.pos1 >= self.len1 {
+            self.exhausted1 = true;
+        }
+        self.nums1[self.pos1 - 1]
+    }
+
+    fn advance2(&mut self) -> i32 {
+        self.pos2 += 1;
+        if self.pos2 >= self.len2 {
+            self.exhausted2 = true;
+        }
+        self.nums2[self.pos2 - 1]
+    }
+}
+
+impl Iterator for MergeSort {
+    type Item = i32;
+ 
+    fn next(&mut self) -> Option<Self::Item> {
+        match (self.exhausted1, self.exhausted2) {
+            (true, true) => None,
+            (false, true) => Some(self.advance1()), 
+            (true, false) => Some(self.advance2()), 
+            (false, false) => {
+                if self.nums1[self.pos1] <= self.nums2[self.pos2] {
+                    Some(self.advance1())
+                } else {
+                    Some(self.advance2())
+                }
+            }
+        }
+    }
+}
+
+impl Solution {
+    pub fn find_median_sorted_arrays(nums1: Vec<i32>, nums2: Vec<i32>) -> f64 {
+        let length_of_whole_array = nums1.len() + nums2.len();
+        let ms = MergeSort::new(nums1, nums2);
+
+        if length_of_whole_array &1 != 0 {
+            // Look for single number in the middle of array
+            let n: Vec<i32> = ms.skip(length_of_whole_array/2).take(1).collect();
+            n[0] as f64
+        } else {
+            // Look for two numbers in the middle of array
+            let n: Vec<i32> = ms.skip(length_of_whole_array/2-1).take(2).collect();
+            (n[0] as f64 + n[1] as f64) / 2.0
+        }
+    }
+}

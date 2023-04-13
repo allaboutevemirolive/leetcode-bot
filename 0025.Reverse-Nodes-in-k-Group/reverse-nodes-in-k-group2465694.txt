@@ -1,0 +1,32 @@
+// https://leetcode.com/problems/reverse-nodes-in-k-group/solutions/2465694/iterator-approach-rt-2ms-mem-2-3-mb/
+use std::*;
+// Definition for singly-linked list.
+// #[derive(PartialEq, Eq, Clone, Debug)]
+// pub struct ListNode {
+//   pub val: i32,
+//   pub next: Option<Box<ListNode>>
+// }
+struct IterNode(Option<Box<ListNode>>);
+impl Iterator for IterNode {
+    type Item = i32;
+	#[inline] fn next(&mut self) -> Option<Self::Item> {
+        let node = mem::take(&mut self.0)?;
+        self.0 = node.next;
+        Some(node.val)
+    }
+}
+impl ListNode {
+    #[inline] fn from_iter(mut list: slice::Iter<'_, i32>) -> Option<Box<ListNode>> {
+        Some(Box::new(Self {
+            val: *list.next()?,
+            next: ListNode::from_iter(list),
+        }))
+    }
+}
+impl Solution {
+    #[inline] pub fn reverse_k_group(head: Option<Box<ListNode>>, k: i32) -> Option<Box<ListNode>> {
+        let mut list: Vec<_> = IterNode(head).collect();
+        list.chunks_exact_mut(k as usize).for_each(|slice| slice.reverse());
+        ListNode::from_iter(list.iter())
+    }
+}

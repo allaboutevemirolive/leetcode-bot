@@ -1,0 +1,30 @@
+// https://leetcode.com/problems/merge-k-sorted-lists/solutions/3239472/rust-solution-with-min-binaryheap-without-extra-box-new/
+// reverse ordering
+impl Ord for ListNode {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        other.val.cmp(&self.val)
+    }
+}
+
+impl PartialOrd for ListNode {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Solution {
+    pub fn merge_k_lists(mut lists: Vec<Option<Box<ListNode>>>) -> Option<Box<ListNode>> {
+        let mut head = None;
+        let mut curr = &mut head;
+        let mut heap: std::collections::BinaryHeap<_> =
+            lists.into_iter().filter_map(|i| i).collect::<Vec<_>>().into();
+        while let Some(mut node) = heap.pop() {
+            if let Some(next) = node.next.take() {
+                heap.push(next);
+            };
+            *curr = Some(node);
+            curr = &mut curr.as_mut().unwrap().next;
+        };
+        head
+    }
+}

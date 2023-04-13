@@ -1,0 +1,58 @@
+// https://leetcode.com/problems/first-missing-positive/solutions/3049649/my-first-solution/
+impl Solution {
+    pub fn first_missing_positive(mut nums : Vec<i32>) -> i32{
+  
+        let mut value : i32 = 0;
+        let mut bool = false;
+
+        nums=nums.into_iter().filter(|n| n.is_positive()).collect();
+        nums.sort();
+        nums.dedup();
+
+            if nums.is_empty(){
+                value = 1;
+                bool = true;
+                return 1 ;
+            }
+
+            if nums.len()==1{
+                    if nums[0] == 1{
+                    value = 2;
+                    bool = true;
+                } 
+                if nums[0] != 1{
+                    value = 1;
+                    bool = true;
+                } 
+                return value;
+            }
+        
+        else{
+        for i in 0..nums.len()-1{
+          
+            
+            if nums[0] != 1{
+                value = 1;
+                bool = true;
+                break;
+            }
+            if nums[i]+1 != nums[i+1]{
+                value = nums[i]+1;
+                bool = true;
+                break;
+            } 
+            
+
+
+        }
+        if bool == false{
+            value = nums[nums.len()-1]+1;
+        }
+                
+        return value;   
+        
+    }
+
+}
+}
+     

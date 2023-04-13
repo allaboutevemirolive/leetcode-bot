@@ -1,0 +1,98 @@
+// https://leetcode.com/problems/valid-number/solutions/3053067/using-backus-naur-form-to-understand-the-problem/
+impl Solution {
+
+    fn split_at_char(s: &str, v : char) -> (&str, &str){
+        let option_index = s.find(v);
+
+        return match option_index {
+            Some(index) => {
+                let len = s.len();
+
+                // Exclude the character we found
+                return (&s[0..index], &s[index+1..len]);
+            },
+            None => (s, &""),
+        }
+
+    }
+
+    #[inline]
+    fn process_first_char( s : &str) -> &str{
+        return if s.len() > 0 {
+            if s[0..1].find("+").is_some() || s[0..1].find("-").is_some() {&s[1..]} else {s}
+        }
+        else {
+            s
+        };
+    }
+
+    fn is_digits(s: &str, is_empty_true : bool) -> bool{
+        for c in s.chars() {
+            match c {
+                '0'..='9' => {},
+                _ => {return false;},
+            }
+        }
+
+        return if s == "" { is_empty_true } else { true };
+    }
+
+    fn is_signed_digits(s: &str, is_empty_true : bool) -> bool{
+        let s = Solution::process_first_char(s);
+        return Solution::is_digits(s, is_empty_true);
+    }
+
+    // Principal function of Solution
+    pub fn is_number(s: String) -> bool {
+        if s.len() == 0 {
+            return false;
+        }
+
+        let s = Solution::process_first_char(&s);
+
+        // Determine 'e' or 'E'
+        let char_e = match ( s.find('e'), s.find('E') ) {
+            (None,None) => { '\0' }, // dummy value
+            (None,Some(_)) => { 'E' },
+            (Some(_),None) => { 'e' },
+            (Some(_),Some(_)) => { 'e' },
+        };
+
+        let (base, expo) = Solution::split_at_char(s, char_e);
+        let (lhs, rhs) = Solution::split_at_char(base, '.');
+
+        let (has_dot, has_e) = (
+                s.find('.').is_some(),
+                s.find('e').is_some() || s.find('E').is_some()
+        );
+
+        return match (has_dot, has_e) {
+
+            // Case: <base> ('e'|'E') <expo>
+            (true, true) =>
+                (lhs.len() > 0 || rhs.len() > 0) &&
+                Solution::is_digits(lhs, true) &&
+                Solution::is_digits(rhs, true) &&
+                Solution::is_signed_digits(expo, false),
+
+            // Case: <lhs>? '.' <rhs>?
+            //      => <lhs> '.' <rhs>
+            //      => '.' <rhs>
+            //      => <lhs> '.'
+            (true, false) =>
+                (lhs.len() > 0 || rhs.len() >0) &&
+                Solution::is_digits(lhs, true) &&
+                Solution::is_digits(rhs, true),
+
+            // Case: <base> ('e'|'E') <expo>
+            (false, true) =>
+                Solution::is_digits(lhs, false) &&
+                Solution::is_signed_digits(expo, false),
+
+            // Case: <base>
+            (false, false) => Solution::is_digits(lhs, false),
+
+        };
+    }
+
+}

@@ -1,0 +1,39 @@
+// https://leetcode.com/problems/trapping-rain-water/solutions/2009953/rust-efficient-solution-using-two-pointers-0ms-100-faster/
+use std::cmp::max;
+
+impl Solution {    
+    pub fn trap(height: Vec<i32>) -> i32 {
+        let mut left = 0;
+        let mut right = height.len() - 1;
+
+        // Initialize max vars
+        let mut left_max = height[left];
+        let mut right_max = height[right];
+
+        let mut res = 0;
+
+        // Here idea is, run loop from left to right, 
+        // check if left_max is smaller than the right_max, 
+        // if it then does not matter if right_max is the largest in right or not
+        // if left is smaller than the right_max, then it would definitely be smaller 
+        // than any other value greater to right_max, we need not to know the maximum at right
+        // as we needed in brute force technique.
+        while left < right {
+            // If left_max is smaller move left max forward 
+            // (we are doing in beginning as we are starting 0th)
+            // update the left_max if it smaller than the current height
+            if left_max < right_max {
+                left += 1;
+                left_max = max(left_max, height[left]);
+                res = res + (left_max - height[left]);
+            } else {
+                // We are doing similar as we did for left
+                right -= 1;
+                right_max = max(right_max, height[right]);
+                res = res + (right_max - height[right]);
+            }
+        }
+
+        return res;
+    }
+}

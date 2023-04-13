@@ -1,0 +1,89 @@
+// https://leetcode.com/problems/n-queens/solutions/1223646/rust-python-backtracking-sol-for-reference/
+impl Solution {
+    pub fn isSafe(board: &Vec<Vec<String>>, row: i32, col: i32, n: i32) -> bool {
+        // check row as usize
+        for r in 0..row {
+            if board[r as usize][col as usize] == "Q" {
+                return false
+            }
+        }
+        // check column-wise
+        for c in 0..col {
+            if board[row as usize][c as usize] == "Q" {
+                return false
+            }
+        }
+        // check diag top-left
+        let mut i = row - 1;
+        let mut j = col - 1;
+
+        while i >= 0 && j >= 0 {
+            if board[i as usize][j as usize] == "Q" {
+                return false
+            }
+            i -= 1;
+            j -= 1;
+        }
+
+        // check diag bottom-left
+        let mut i = row + 1;
+        let mut j = col - 1;
+
+        while i < n && j >= 0 {
+            if board[i as usize][j as usize] == "Q" {
+                return false
+            }
+            i += 1;
+            j -= 1;
+        }
+
+        // check diag top-right
+        let mut i = row - 1;
+        let mut j = col + 1;
+
+        while i >= 0 && j < n {
+            if board[i as usize][j as usize] == "Q" {
+                return false
+            }
+            i -= 1;
+            j += 1;
+        }
+
+        return true;
+    }
+
+    pub fn backtracking(board: &mut Vec<Vec<String>>, row: i32, col: i32, nsize: i32, cnt: i32) -> Vec<Vec<String>> {
+        let mut result: Vec<Vec<String>> = Vec::with_capacity(nsize as usize * nsize as usize);
+        board[row as usize][col as usize] = "Q".to_string();
+
+        if cnt == nsize {
+            let mut res = board.clone();
+            let mut c = Vec::new();
+            for i in res {
+                c.push(i.join(""));
+            }
+            result.push(c.clone());
+        }
+        else {
+            let next_column = col + 1;
+            for nr in 0..nsize {
+                if Solution::isSafe(board, nr, next_column, nsize) {
+                    result.append(&mut Solution::backtracking(board, nr, next_column, nsize, cnt+1));
+                }
+            }
+        }
+        board[row as usize][col as usize] = ".".to_string();
+        return result;
+    }
+
+    pub fn solve_n_queens(n: i32) -> Vec<Vec<String>> {
+        let mut board = vec![vec![".".to_string(); n as usize]; n as usize];
+        let column = 0;
+        let mut result: Vec<Vec<String>> = Vec::with_capacity(n as usize * n as usize);
+        for row in 0..n {
+            result.append(&mut Solution::backtracking(& mut board, row, column, n, 1));
+        }
+
+        return result;
+    }
+}
