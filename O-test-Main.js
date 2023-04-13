@@ -53,23 +53,27 @@ const fs = require('fs');
         const rustButton = await page.$('div.relative.cursor-pointer.px-3.py-3.text-label-4.dark\\:text-dark-label-4.hover\\:text-label-1.dark\\:hover\\:text-dark-label-1.GMIHh:has-text("Rust")');
         if (rustButton) {
             await rustButton.click();
-            console.log('Clicked Rust hidden button');
+            console.log('Clicked Rust hidden button / there is more than one language');
         } else {
             console.log('Rust button is visible or there is only one language');
         }
 
-        const dataElement = await page.$('.language-rust');
-        await page.waitForTimeout(3000);
-        const dataText = await dataElement.innerText();
-        await page.waitForTimeout(3000);
+        try {
+            const dataElement = await page.$('.language-rust');
+            await page.waitForTimeout(3000);
+            const dataText = await dataElement.innerText();
+            await page.waitForTimeout(3000);
 
-        fs.writeFile(`${reconstructedString}.txt`, `// ${link}\n${dataText}`, (err) => {
-            if (err) {
-                console.error(err);
-                return;
-            }
-            console.log('Data saved to dataText.txt');
-        });
+            fs.writeFile(`${reconstructedString}.txt`, `// ${link}\n${dataText}`, (err) => {
+                if (err) {
+                    console.error(err);
+                    return;
+                }
+                console.log('Data saved to dataText.txt');
+            });
+        } catch (error) {
+            console.log('Error occurred while saving data ${reconstructedString}\nLink: ${link}');
+        }
 
     }
 
