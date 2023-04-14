@@ -1,0 +1,27 @@
+// https://leetcode.com/problems/race-car/solutions/2931865/just-a-runnable-solution/
+impl Solution {
+    pub fn racecar(target: i32) -> i32 {
+        use std::cmp::min;
+        let n: usize = target as usize;
+        let mut dp: Vec<i32> = vec![std::i32::MAX; n + 1];
+        dp[0] = 0;
+
+        for i in 1..n + 1 {
+            let power = (i as f64 + 1.0).log2();
+            if power.fract() == 0.0 {
+                dp[i] = power as i32;
+            } else {
+                let mut step: i32 = power.floor() as i32;
+                let mut j: usize = (1 << step) - 1;
+                for bw in 0..step {
+                    let distance: usize = (1 << bw) - 1;
+                    dp[i] = min(dp[i], step + 1 + bw + 1 + dp[i - (j - distance)])
+                }
+                step += 1;
+                j = (1 << step) - 1;
+                dp[i] = min(dp[i], step + 1 + dp[j - i])
+            }
+        }
+        dp[n]
+    }
+}

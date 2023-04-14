@@ -1,0 +1,40 @@
+// https://leetcode.com/problems/bus-routes/solutions/2931849/just-a-runnable-solution/
+impl Solution {
+    pub fn num_buses_to_destination(routes: Vec<Vec<i32>>, source: i32, target: i32) -> i32 {
+        let mut bus_stop_bus_route = std::collections::HashMap::new();
+        for (route_index, bus_route) in routes.iter().enumerate() {
+            for bus_stop in bus_route {
+                bus_stop_bus_route
+                    .entry(*bus_stop)
+                    .or_insert_with(|| std::collections::HashSet::new())
+                    .insert(route_index);
+            }
+        }
+
+        let mut visited_bus_stop = std::collections::HashSet::new();
+        visited_bus_stop.insert(source);
+        let mut visited_route = std::collections::HashSet::new();
+        let mut num_buses = 0;
+
+        let mut journey = std::collections::VecDeque::new();
+        journey.push_back((source, num_buses));
+
+        while let Some((bus_stop, num_buses)) = journey.pop_front() {
+            if bus_stop == target {
+                return num_buses;
+            }
+            for next_route in bus_stop_bus_route[&bus_stop].iter() {
+                if !visited_route.contains(next_route) {
+                    visited_route.insert(*next_route);
+                    for new_bus_stop in routes[*next_route].iter() {
+                        if !visited_bus_stop.contains(new_bus_stop) {
+                            visited_bus_stop.insert(*new_bus_stop);
+                            journey.push_back((*new_bus_stop, num_buses + 1));
+                        }
+                    }
+                }
+            }
+        }
+        -1
+    }
+}

@@ -1,0 +1,36 @@
+// https://leetcode.com/problems/sliding-window-median/solutions/2860527/just-a-runnable-solution/
+impl Solution {
+    pub fn median_sliding_window(nums: Vec<i32>, k: i32) -> Vec<f64> {
+        let mut ans = vec![];
+        let mut m = Vec::new();
+        let k = k as usize;
+        if nums.len() < k {
+            return ans;
+        }
+        for i in 0..k {
+            m.push(nums[i]);
+        }
+        m.sort();
+        ans.push(Self::find_median(&mut m, 0, 0));
+        for i in k..nums.len() {
+            ans.push(Self::find_median(&mut m, nums[i - k], nums[i]));
+        }
+        ans
+    }
+
+    fn find_median(m: &mut Vec<i32>, remove: i32, add: i32) -> f64 {
+        if remove != add {
+            let pos = m.binary_search(&add).unwrap_or_else(|e| e);
+            m.insert(pos, add);
+            if let Ok(pos) = m.binary_search(&remove) {
+                m.remove(pos);
+            }
+        }
+        let n = m.len();
+        if n & 1 == 1 {
+            m[n / 2] as f64
+        } else {
+            (m[n / 2 - 1] as f64 + m[n / 2] as f64) / 2.0
+        }
+    }
+}

@@ -1,0 +1,31 @@
+// https://leetcode.com/problems/shortest-path-visiting-all-nodes/solutions/2937552/just-a-runnable-solution/
+impl Solution {
+    pub fn shortest_path_length(graph: Vec<Vec<i32>>) -> i32 {
+        let n = graph.len();
+        let mut queue = std::collections::VecDeque::new();
+        let mut visited = std::collections::HashSet::new();
+        for i in 0..n {
+            queue.push_back((i, 1 << i));
+            visited.insert((i, 1 << i));
+        }
+        let mut step = 0;
+        while !queue.is_empty() {
+            let size = queue.len();
+            for _ in 0..size {
+                let (cur, mask) = queue.pop_front().unwrap();
+                if mask == (1 << n) - 1 {
+                    return step;
+                }
+                for &next in &graph[cur] {
+                    let next_mask = mask | (1 << next);
+                    if !visited.contains(&(next as usize, next_mask)) {
+                        queue.push_back((next as usize, next_mask));
+                        visited.insert((next as usize, next_mask));
+                    }
+                }
+            }
+            step += 1;
+        }
+        0
+    }
+}

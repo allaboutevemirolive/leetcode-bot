@@ -1,0 +1,55 @@
+// https://leetcode.com/problems/sum-of-distances-in-tree/solutions/2934082/just-a-runnable-solution/
+impl Solution {
+    pub fn sum_of_distances_in_tree(n: i32, edges: Vec<Vec<i32>>) -> Vec<i32> {
+        let n = n as usize;
+        let mut graph = vec![vec![]; n];
+        for edge in edges {
+            let (u, v) = (edge[0] as usize, edge[1] as usize);
+            graph[u].push(v);
+            graph[v].push(u);
+        }
+
+        let mut ans = vec![0; n];
+        let mut count = vec![1; n];
+        let mut visited = vec![false; n];
+
+        fn dfs1(
+            graph: &Vec<Vec<usize>>,
+            u: usize,
+            visited: &mut Vec<bool>,
+            count: &mut Vec<usize>,
+            ans: &mut Vec<i32>,
+        ) {
+            visited[u] = true;
+            for &v in &graph[u] {
+                if !visited[v] {
+                    dfs1(graph, v, visited, count, ans);
+                    count[u] += count[v];
+                    ans[u] += ans[v] + count[v] as i32;
+                }
+            }
+        }
+
+        fn dfs2(
+            graph: &Vec<Vec<usize>>,
+            u: usize,
+            visited: &mut Vec<bool>,
+            count: &mut Vec<usize>,
+            ans: &mut Vec<i32>,
+        ) {
+            visited[u] = true;
+            for &v in &graph[u] {
+                if !visited[v] {
+                    ans[v] = ans[u] - count[v] as i32 + (count.len() - count[v]) as i32;
+                    dfs2(graph, v, visited, count, ans);
+                }
+            }
+        }
+
+        dfs1(&graph, 0, &mut visited, &mut count, &mut ans);
+        visited = vec![false; n];
+        dfs2(&graph, 0, &mut visited, &mut count, &mut ans);
+
+        ans
+    }
+}

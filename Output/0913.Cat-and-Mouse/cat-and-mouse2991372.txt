@@ -1,0 +1,76 @@
+// https://leetcode.com/problems/cat-and-mouse/solutions/2991372/just-a-runnable-solution/
+impl Solution {
+    pub fn cat_mouse_game(graph: Vec<Vec<i32>>) -> i32 {
+        use std::collections::VecDeque;
+        let len = graph.len();
+        let mut dp = vec![vec![vec![0; len]; len]; 2];
+        let mut outdegree = vec![vec![vec![0; len]; len]; 2];
+        let mut q = VecDeque::new();
+
+        for j in 0..len {
+            dp[0][0][j] = 1; dp[1][0][j] = 1;
+            q.push_back((0, 0, j));
+            q.push_back((1, 0, j));
+        }
+        for j in 1..len {
+            dp[0][j][j] = 2; dp[1][j][j] = 2;
+            q.push_back((0, j, j));
+            q.push_back((1, j, j));
+        }
+        for i in 0..len {
+            for j in 1..len {
+                outdegree[0][i][j] = graph[i].len() as i32;
+                outdegree[1][i][j] = graph[j].len() as i32;
+            }
+        }
+        for &v in &graph[0] {
+            for i in 0..len {
+                outdegree[1][i][v as usize] -= 1;
+            }
+        }
+        while let Some((turn, mouse, cat)) = q.pop_front() {
+            if turn == 0 && mouse == 1 && cat == 2 {
+                break;
+            }
+            if turn == 0 {
+                for &v in &graph[cat] {
+                    let v = v as usize;
+                    if v == 0 {
+                        continue;
+                    }
+                    if dp[1][mouse][v] > 0 {
+                        continue;
+                    }
+                    if dp[turn][mouse][cat] == 2 {
+                        dp[1][mouse][v] = 2;
+                        q.push_back((1, mouse, v));
+                        continue;
+                    }
+                    outdegree[1][mouse][v] -= 1;
+                    if outdegree[1][mouse][v] == 0 {
+                        dp[1][mouse][v] = 1;
+                        q.push_back((1, mouse, v));
+                    }
+                }
+            } else {
+                for &v in &graph[mouse] {
+                    let v = v as usize;
+                    if dp[0][v][cat] > 0 {
+                        continue;
+                    }
+                    if dp[turn][mouse][cat] == 1 {
+                        dp[0][v][cat] = 1;
+                        q.push_back((0, v, cat));
+                        continue;
+                    }
+                    outdegree[0][v][cat] -= 1;
+                    if outdegree[0][v][cat] == 0 {
+                        dp[0][v][cat] = 2;
+                        q.push_back((0, v, cat));
+                    }
+                }
+            }
+        }
+        dp[0][1][2]
+    }
+}

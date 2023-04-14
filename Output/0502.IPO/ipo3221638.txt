@@ -1,0 +1,28 @@
+// https://leetcode.com/problems/ipo/solutions/3221638/tuple-sorting-slices-functional-binary-heap-o-n-log-n/
+impl Solution {
+    pub fn find_maximized_capital(mut k: i32, mut w: i32, profits: Vec<i32>, capital: Vec<i32>) -> i32 {
+        use std::collections::BinaryHeap;
+        let mut projects = profits.into_iter().zip(capital.into_iter()).collect::<Vec<_>>(); //profit, capital
+        projects.sort_unstable_by_key(|(_, c)| { *c }); //O(n*log(n)) to get all project by their start capital requirement
+        let mut prev_reachable_nr = 0;
+        let mut reachable_profits_pq = BinaryHeap::new(); //the queue, sorting by profit the project tuple
+        while k > 0 {
+            projects[prev_reachable_nr..].iter().try_fold(&mut reachable_profits_pq, |acc, (profit, capital)| { 
+                if *capital <= w {
+                    acc.push(*profit); //collect the next projects batch reachable with the recently profited capital
+                    prev_reachable_nr += 1;
+                    Some(acc)
+                } else {
+                    None
+                }
+            });
+            if let Some(profit) = reachable_profits_pq.pop() {
+                w += profit; //add the profit of the maximum reachable project
+                k -= 1;
+            } else {
+                break; //no reachable projects anymore for the accumulated capital
+            }
+        }
+        w
+    }
+}

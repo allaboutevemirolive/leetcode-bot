@@ -1,0 +1,47 @@
+// https://leetcode.com/problems/all-oone-data-structure/solutions/2853145/just-a-runnable-solution/
+struct AllOne {
+    one: std::collections::HashMap<String, i32>,
+}
+impl AllOne {
+    fn new() -> Self {
+        let m = std::collections::HashMap::new();
+        AllOne { one: m }
+    }
+    fn inc(&mut self, key: String) {
+        if let Some(v) = self.one.get_mut(&key) {
+            *v += 1;
+        } else {
+            self.one.insert(key, 1);
+        }
+    }
+    fn dec(&mut self, key: String) {
+        if let Some(v) = self.one.get_mut(&key) {
+            *v -= 1;
+            if *v < 1 {
+                self.one.remove(&key);
+            }
+        }
+    }
+    fn get_max_key(&self) -> String {
+        let mut max = 0;
+        let mut s_of_max = String::new();
+        for (i, v) in &self.one {
+            if *v > max {
+                s_of_max = i.to_string();
+                max = *v;
+            }
+        }
+        s_of_max
+    }
+    fn get_min_key(&self) -> String {
+        let mut min = 2147483647;
+        let mut s_of_min = String::new();
+        for (i, v) in &self.one {
+            if *v < min {
+                s_of_min = i.to_string();
+                min = *v;
+            }
+        }
+        s_of_min
+    }
+}

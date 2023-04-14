@@ -1,0 +1,33 @@
+// https://leetcode.com/problems/swim-in-rising-water/solutions/2914169/just-a-runnable-solution/
+impl Solution {
+    pub fn swim_in_water(grid: Vec<Vec<i32>>) -> i32 {
+        let n = grid.len();
+        let mut visited = vec![vec![false; n]; n];
+        let mut queue = std::collections::BinaryHeap::new();
+        queue.push(std::cmp::Reverse((grid[0][0], 0, 0)));
+        let mut max = 0;
+        while let Some(std::cmp::Reverse((t, i, j))) = queue.pop() {
+            if i == n - 1 && j == n - 1 {
+                return std::cmp::max(max, t);
+            }
+            if visited[i][j] {
+                continue;
+            }
+            visited[i][j] = true;
+            max = std::cmp::max(max, t);
+            if i > 0 {
+                queue.push(std::cmp::Reverse((grid[i - 1][j], i - 1, j)));
+            }
+            if i < n - 1 {
+                queue.push(std::cmp::Reverse((grid[i + 1][j], i + 1, j)));
+            }
+            if j > 0 {
+                queue.push(std::cmp::Reverse((grid[i][j - 1], i, j - 1)));
+            }
+            if j < n - 1 {
+                queue.push(std::cmp::Reverse((grid[i][j + 1], i, j + 1)));
+            }
+        }
+        unreachable!()
+    }
+}

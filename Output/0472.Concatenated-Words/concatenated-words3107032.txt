@@ -1,0 +1,51 @@
+// https://leetcode.com/problems/concatenated-words/solutions/3107032/o-n-l-with-comments-beats-100/
+use std::collections::HashSet;
+
+impl Solution {
+    pub fn find_all_concatenated_words_in_a_dict(mut words: Vec<String>) -> Vec<String> {
+       // Shorter words can't contain longer words, so we process words in ascending
+       // order to ensure all possible sub-words have already been indexed.
+       words.sort_by(|w1, w2| w1.len().cmp(&w2.len()));
+
+       let mut ans = Vec::new();
+
+       // Track words we have seen and might possibly show up in concatenated words.
+       let mut seen_words = HashSet::<&str>::new();
+
+       // Max length of word seen so far. Only need to search for substring prefixes
+       // up to this length.
+       let mut curr_max_word_len = 0;
+    
+       for word in words.iter() {
+           if Solution::is_concat_word(word, &seen_words, word.len()) {
+               ans.push(word.clone());
+           }
+
+           seen_words.insert(word);
+           curr_max_word_len = word.len();
+       }
+
+       ans
+    }
+
+    // Detect if word is concatenation of previous words by recursively inspecting word prefix.
+    fn is_concat_word(word: &str, seen_words: &HashSet<&str>, max_word_len: usize) -> bool {
+        let mut found_prefix = false;
+
+        // Only need to inspect word prefix up to length of longest previously seen word.
+        for prefix_len in 1..=std::cmp::min(max_word_len, word.len()) {
+            let prefix = &word[0..prefix_len];
+
+            if seen_words.contains(&prefix) {
+                if prefix == word {
+                    return true;
+                }
+
+                // Concatenated word may possibly have multiple matching prefixes, need to scan them all.
+                found_prefix |= Solution::is_concat_word(&word[prefix_len..], seen_words, max_word_len);
+            }
+        }
+
+        found_prefix
+    }
+}

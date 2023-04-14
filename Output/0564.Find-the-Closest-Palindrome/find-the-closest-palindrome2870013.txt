@@ -1,0 +1,63 @@
+// https://leetcode.com/problems/find-the-closest-palindrome/solutions/2870013/just-a-runnable-solution/
+impl Solution {
+    pub fn nearest_palindromic(n: String) -> String {
+        let mut arr = n.chars().collect::<Vec<char>>();
+        let len = arr.len();
+        for i in 0..len / 2 {
+            arr[len - 1 - i] = arr[i];
+        }
+        let cur_p = arr.iter().collect::<String>();
+        let pre_p = Solution::nearest_palindrom(&cur_p, false);
+        let next_p = Solution::nearest_palindrom(&cur_p, true);
+        let num = n.parse::<i64>().unwrap();
+        let cur = cur_p.parse::<i64>().unwrap();
+        let pre = pre_p.parse::<i64>().unwrap();
+        let next = next_p.parse::<i64>().unwrap();
+        let d1 = (num - pre).abs();
+        let d2 = (num - cur).abs();
+        let d3 = (num - next).abs();
+        if num == cur {
+            if d1 <= d3 {
+                pre_p
+            } else {
+                next_p
+            }
+        } else if num > cur {
+            if d2 <= d3 {
+                cur_p
+            } else {
+                next_p
+            }
+        } else if d1 <= d2 {
+            pre_p
+        } else {
+            cur_p
+        }
+    }
+    
+    fn nearest_palindrom(cur_p: &str, dir: bool) -> String {
+        let k = cur_p.len() / 2;
+        let p = cur_p.len() - k;
+        let mut l = cur_p[0..p].parse::<i64>().unwrap();
+        if dir {
+            l += 1;
+        } else {
+            l -= 1;
+        }
+        if l == 0 {
+            if k == 0 {
+                return "0".to_string();
+            } else {
+                return "9".to_string();
+            }
+        }
+        let mut left = l.to_string();
+        let mut right = left.clone();
+        right = right.chars().rev().collect::<String>();
+        if k > left.len() {
+            right.push('9');
+        }
+        left.push_str(&right[right.len() - k..]);
+        left
+    }
+}

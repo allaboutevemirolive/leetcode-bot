@@ -1,0 +1,103 @@
+// https://leetcode.com/problems/erect-the-fence/solutions/2829232/intuitive-solution/
+impl Solution {
+    pub fn outer_trees(trees: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
+        // Keep track of visited trees
+        let mut visited: Vec<bool> = vec![false; trees.len()];
+
+        // Get the top-most tree and mark it as visited
+        let top_idx = Self::get_top_tree(&trees);
+        visited[top_idx] = true;
+
+        // Keep track of the lowest angle and previuos tree
+        let mut angle: f64 = -4.0; // -4 is lower than any angle returned by atan2
+        let mut curr_index = top_idx;
+
+        loop {
+            if let Some(next_idx) = Self::get_next_tree(&trees,
+                                         curr_index, &mut angle){
+                if visited[next_idx] {
+                    break;
+                }
+                println!("Next: {:?}\tAngle: {}", trees[next_idx], angle);
+                curr_index = next_idx;
+                visited[next_idx] = true;
+            }
+            else {
+                break;
+            }
+        }
+
+        trees.iter()
+            .enumerate()
+            .filter(|(i, _)| visited[*i])
+            .map(|(_, x)| x)
+            .fold(Vec::new(), |mut acc, x| {
+                    acc.push(x.to_vec());
+                    acc
+                })
+
+    }
+
+    fn get_top_tree(trees: &Vec<Vec<i32>>) -> usize {
+        let mut a: usize = 0;
+        for (idx, tree) in trees.iter().enumerate() {
+            if tree[1] > trees[a][1] {
+                a = idx;
+            }
+            else if (tree[1] == trees[a][1]) && (tree[0] > trees[a][0]) {
+                a = idx;
+            }
+        }
+        a
+    }
+
+    fn get_next_tree(trees: &Vec<Vec<i32>>, curr_index: usize, 
+                     angle: &mut f64) -> Option<usize> {
+
+        let curr_tree = &trees[curr_index];
+        let the_angle = *angle;
+        let mut filtered_trees = trees.iter()
+            .enumerate()
+            .filter(|(x, t)|
+                (x != &curr_index) &&
+                (Self::compute_angle(curr_tree, t) >= (the_angle - 1e-10)));
+        
+        let (mut next_idx, mut next_tree) = filtered_trees.next()?;
+        *angle = Self::compute_angle(curr_tree, next_tree);
+
+        for (idx, tree) in filtered_trees {
+            let tree_angle = Self::compute_angle(curr_tree, tree);
+            let next_angle = Self::compute_angle(curr_tree, next_tree);
+
+            let tree_dist = Self::compute_distance(curr_tree, tree);
+            let next_dist = Self::compute_distance(curr_tree, next_tree);
+
+            if tree_angle < next_angle {
+                next_idx = idx;
+                next_tree = tree;
+                *angle = tree_angle;
+            } else if ((tree_angle - next_angle).abs() < 1e-10) &&
+             (tree_dist < next_dist) {
+                next_idx = idx;
+                next_tree = tree;
+            }
+        }
+        Some(next_idx)
+    }
+
+    fn compute_angle(curr_tree: &Vec<i32>, next_tree: &Vec<i32>) -> f64 {
+        let dx = f64::from(next_tree[0] - curr_tree[0]);
+        let dy = f64::from(next_tree[1] - curr_tree[1]);
+
+        // Compute angle
+        dy.atan2(-dx)
+    }
+
+    fn compute_distance(curr_tree: &Vec<i32>, next_tree: &Vec<i32>) -> f64 {
+        let dx = f64::from(next_tree[0] - curr_tree[0]);
+        let dy = f64::from(next_tree[1] - curr_tree[1]);
+
+        // Compute distance
+        (dx.powi(2) + dy.powi(2)).sqrt()
+    }
+}

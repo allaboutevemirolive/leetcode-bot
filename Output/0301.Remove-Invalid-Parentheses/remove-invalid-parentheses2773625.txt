@@ -1,0 +1,45 @@
+// https://leetcode.com/problems/remove-invalid-parentheses/solutions/2773625/simple-implement/
+impl Solution {
+    pub fn remove_invalid_parentheses(s: String) -> Vec<String> {
+        fn is_valid(s: &str) -> bool {
+            let mut count = 0;
+            for c in s.chars() {
+                match c {
+                    '(' => count += 1,
+                    ')' => {
+                        count -= 1;
+                        if count < 0 {
+                            return false;
+                        }
+                    }
+                    _ => (),
+                }
+            }
+            count == 0
+        }
+
+        let mut level = std::collections::HashSet::new();
+        level.insert(s);
+        while !level.is_empty() {
+            let mut valid = Vec::new();
+            for s in level.iter() {
+                if is_valid(s) {
+                    valid.push(s.clone());
+                }
+            }
+            if !valid.is_empty() {
+                return valid;
+            }
+            let mut next_level = std::collections::HashSet::new();
+            for s in level.iter() {
+                for i in 0..s.len() {
+                    let mut s = s.clone();
+                    s.remove(i);
+                    next_level.insert(s);
+                }
+            }
+            level = next_level;
+        }
+        vec![]
+    }
+}

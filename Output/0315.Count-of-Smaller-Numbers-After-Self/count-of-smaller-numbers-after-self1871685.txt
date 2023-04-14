@@ -1,0 +1,71 @@
+// https://leetcode.com/problems/count-of-smaller-numbers-after-self/solutions/1871685/segmented-tree-binary-search-explanation/
+use std::cell::*;
+use std::char::*;
+use std::cmp::*;
+use std::collections::hash_map::*;
+use std::collections::*;
+use std::fmt::Binary;
+use std::iter::*;
+use std::mem::*;
+use std::ops::*;
+use std::rc::*;
+use std::*;
+
+fn update(segment: &mut Vec<i32>, l: i32, r: i32, n: usize, val: i32) {
+    if l == r {
+        segment[n] += 1;
+    } else {
+        let mid = (l + r) / 2;
+        if val > mid {
+            update(segment, mid + 1, r, 2 * n + 2, val);
+        } else {
+            update(segment, l, mid, 2 * n + 1, val);
+        }
+
+        segment[n] = segment[2 * n + 1] + segment[2 * n + 2];
+    }
+}
+
+fn sum_beneath_n(segment: &mut Vec<i32>, l: i32, r: i32, n: usize, val: i32) -> i32 {
+    if val > r {
+        segment[n]
+    } else if l == r {
+        if val >= l {
+            0
+        } else {
+            segment[n]
+        }
+    } else {
+        let mid = (l + r) / 2;
+        let mut ans = sum_beneath_n(segment, l, mid, 2 * n + 1, val);
+        if val > mid + 1 {
+            ans += sum_beneath_n(segment, mid + 1, r, 2 * n + 2, val);
+        }
+
+        ans
+    }
+}
+
+impl Solution {
+    pub fn count_smaller(nums: Vec<i32>) -> Vec<i32> {
+        let mut ans = vec![0; nums.len()];
+
+        let mut minn = i32::MAX;
+        let mut maxn = i32::MIN;
+        for i in 0..nums.len() {
+            minn = min(nums[i], minn);
+            maxn = max(nums[i], maxn);
+        }
+
+        let mut segment_len = (maxn - minn + 1) as usize;
+        let mut segment = vec![0; segment_len * 4];
+
+        update(&mut segment, 0, maxn - minn, 0, nums[nums.len() - 1] - minn);
+        for i in (0..nums.len() - 1).rev() {
+            ans[i] = sum_beneath_n(&mut segment, 0, maxn - minn, 0, nums[i] - minn);
+            update(&mut segment, 0, maxn - minn, 0, nums[i] - minn);
+        }
+
+        ans
+    }
+}

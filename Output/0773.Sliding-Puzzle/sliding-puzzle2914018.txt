@@ -1,0 +1,51 @@
+// https://leetcode.com/problems/sliding-puzzle/solutions/2914018/just-a-runnable-solution/
+impl Solution {
+    pub fn sliding_puzzle(board: Vec<Vec<i32>>) -> i32 {
+        fn string_swap(s: &str, from_idx: usize, to_idx: usize) -> String {
+            let mut chars: Vec<_> = s.chars().collect();
+            chars.swap(from_idx, to_idx);
+            chars.into_iter().collect()
+        }
+
+        fn _sliding_puzzle(board: Vec<Vec<i32>>) -> Option<i32> {
+            let goal = "123450".to_string();
+            let moves = vec![
+                vec![1, 3],
+                vec![0, 2, 4],
+                vec![1, 5],
+                vec![0, 4],
+                vec![1, 3, 5],
+                vec![2, 4],
+            ];
+            let mut cr = String::new();
+            for i in 0..board.len() {
+                for j in 0..board[0].len() {
+                    cr.push_str(&board[i][j].to_string());
+                }
+            }
+            let mut q = std::collections::VecDeque::new();
+            q.push_back((cr.clone(), 0));
+            let mut vis = std::collections::HashSet::new();
+            vis.insert(cr);
+            while !q.is_empty() {
+                let t = q.pop_front()?;
+                let nw = t.0;
+                let ans = t.1;
+                if nw == goal {
+                    return Some(ans);
+                }
+                let inx = nw.find('0')?;
+                for i in &moves[inx] {
+                    let st = string_swap(&nw, *i, inx);
+                    if !vis.contains(&st) {
+                        vis.insert(st.clone());
+                        q.push_back((st, ans + 1));
+                    }
+                }
+            }
+            Some(-1)
+        }
+
+        _sliding_puzzle(board).unwrap_or(-1)
+    }
+}

@@ -1,0 +1,32 @@
+// https://leetcode.com/problems/concatenated-words/solutions/3105367/fast-low-memory-solution-with-hashset/
+use std::collections::HashSet;
+use std::iter::FromIterator;
+
+impl Solution {
+
+    fn is_concat(dict: &HashSet<&str>, word: &str) -> Option<u32> {
+        for i in 1..=word.len() {
+            if dict.contains(&word[..i]) {
+                if i == word.len() {
+                    return Some(1);
+                } else if let Some(depth) = Solution::is_concat(dict, &word[i..]) {
+                    return Some(depth + 1);
+                }
+            }
+        }
+        None
+    }
+
+    pub fn find_all_concatenated_words_in_a_dict(words: Vec<String>) -> Vec<String> {
+        let mut concatenated = vec![];
+        let dict: HashSet<&str> = HashSet::from_iter(words.iter().map(|s| s.as_str()));
+        for w in &words {
+            if let Some(depth) = Solution::is_concat(&dict, w) {
+                if depth != 1 {
+                    concatenated.push(w.clone());
+                }
+            }
+        }
+        concatenated
+    }
+}

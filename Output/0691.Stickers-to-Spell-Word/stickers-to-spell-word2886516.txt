@@ -1,0 +1,66 @@
+// https://leetcode.com/problems/stickers-to-spell-word/solutions/2886516/just-a-runnable-solution/
+impl Solution {
+    fn solve(
+        stickers: &Vec<String>,
+        i: usize,
+        target: &String,
+        mask: i32,
+        the_mask: i32,
+        the_t: &mut Vec<Vec<i32>>,
+    ) -> i32 {
+        if mask == the_mask {
+            return 0;
+        }
+
+        if i == stickers.len() {
+            return 1 << 30;
+        }
+
+        let mut result = the_t[mask as usize][i];
+
+        if result != -1 {
+            return result;
+        }
+
+        let mut __m = vec![0; 26];
+
+        for x in stickers[i].chars() {
+            __m[x as usize - 'a' as usize] += 1;
+        }
+
+        let mut over_lap = 0;
+
+        for k in 0..target.len() {
+            if mask & (1 << k) != 0 {
+                continue;
+            }
+            if __m[target.chars().nth(k).unwrap() as usize - 'a' as usize] != 0 {
+                over_lap |= 1 << k;
+                __m[target.chars().nth(k).unwrap() as usize - 'a' as usize] -= 1;
+            }
+        }
+
+        if over_lap != 0 {
+            result = std::cmp::min(
+                1 + Self::solve(stickers, i, target, mask | over_lap, the_mask, the_t),
+                Self::solve(stickers, i + 1, target, mask, the_mask, the_t),
+            );
+            the_t[mask as usize][i] = result;
+            return result;
+        }
+
+        result = Self::solve(stickers, i + 1, target, mask, the_mask, the_t);
+        the_t[mask as usize][i] = result;
+        result
+    }
+
+    pub fn min_stickers(stickers: Vec<String>, target: String) -> i32 {
+        let the_mask = (1 << target.len()) - 1;
+        let mut the_t = vec![vec![-1; 52]; 32780];
+        let ans = Self::solve(&stickers, 0, &target, 0, the_mask, &mut the_t);
+        if ans >= 1 << 30 {
+            return -1;
+        }
+        ans
+    }
+}

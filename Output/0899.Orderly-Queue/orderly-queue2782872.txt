@@ -1,0 +1,26 @@
+// https://leetcode.com/problems/orderly-queue/solutions/2782872/this-question-is-one-of-those-silly-questions-with-a-trick-to-it/
+use std::collections::VecDeque;
+
+impl Solution {
+    pub fn orderly_queue(s: String, k: i32) -> String {
+        if k > 1 {
+            let mut res = Vec::from(s.as_bytes());
+            res.sort();
+            return String::from_utf8(res).unwrap();
+        }
+        let minIndices: Vec<usize> = Vec::new();
+        
+        let mut oq = VecDeque::from(s.as_bytes().to_vec());
+        let len = oq.len();
+        let mut bests = String::from(s.clone());
+        for _ in 0..len {
+            oq.rotate_left(1);
+            oq.make_contiguous();
+            let s = String::from_utf8(oq.as_slices().0.to_vec()).unwrap();
+            if s < bests {
+                bests = s;
+            } 
+        }
+        return bests
+    }
+}

@@ -1,0 +1,53 @@
+// https://leetcode.com/problems/random-pick-with-blacklist/solutions/2889884/just-a-runnable-solution/
+use rand::prelude::*;
+use std::collections::HashMap;
+
+struct Solution {
+    sz: usize,
+    mapping: HashMap<usize, usize>,
+    black_list: Vec<usize>,
+    last: usize,
+    rng: ThreadRng,
+}
+
+impl Solution {
+    fn new(n: i32, blacklist: Vec<i32>) -> Self {
+        let n = n as usize;
+        let sz = n - blacklist.len();
+        let mut black_list = blacklist.iter().map(|&x| x as usize).collect::<Vec<_>>();
+        black_list.sort();
+
+        let mut mapping = black_list
+            .iter()
+            .enumerate()
+            .map(|(i, &v)| (v, n - i))
+            .collect::<HashMap<_, _>>();
+
+        let mut last = n - 1;
+        for &i in black_list.iter() {
+            if i >= sz {
+                continue;
+            }
+            while mapping.contains_key(&last) {
+                last -= 1;
+            }
+            mapping.insert(i, last);
+            last -= 1;
+        }
+        Solution {
+            sz,
+            mapping,
+            black_list,
+            last,
+            rng: thread_rng(),
+        }
+    }
+
+    fn pick(&mut self) -> i32 {
+        let picked = self.rng.gen_range(0, self.sz);
+        if let Some(&v) = self.mapping.get(&picked) {
+            return v as i32;
+        }
+        picked as i32
+    }
+}

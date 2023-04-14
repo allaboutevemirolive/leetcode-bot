@@ -1,0 +1,47 @@
+// https://leetcode.com/problems/longest-increasing-path-in-a-matrix/solutions/3008222/memorized-dfs/
+impl Solution {
+    pub fn longest_increasing_path(matrix: Vec<Vec<i32>>) -> i32 {
+        let m = matrix.len();
+        let n = matrix[0].len();
+
+        let mut cache = vec![vec![0; n]; m];
+
+        fn recursive(
+            point: (usize, usize),
+            cache: &mut Vec<Vec<i32>>,
+            matrix: &Vec<Vec<i32>>,
+            m: usize,
+            n: usize,
+        ) -> i32 {
+            let (i, j) = point;
+
+            if cache[i][j] > 0 {
+                return cache[i][j];
+            }
+
+            cache[i][j] = vec![
+                (i.saturating_sub(1), j),
+                (i + 1, j),
+                (i, j.saturating_sub(1)),
+                (i, j + 1),
+            ]
+            .into_iter()
+            .filter(|(ni, nj)| !(ni == &i && nj == &j) && ni < &m && nj < &n)
+            .filter(|(ni, nj)| matrix[*ni][*nj] > matrix[i][j])
+            .fold(1, |acc, (ni, nj)| {
+                acc.max(1 + recursive((ni, nj), cache, matrix, m, n))
+            });
+
+            cache[i][j]
+        }
+
+        let mut longest_path = 0i32;
+        for i in 0..m {
+            for j in 0..n {
+                longest_path = longest_path.max(recursive((i, j), &mut cache, &matrix, m, n))
+            }
+        }
+
+        longest_path
+    }
+}

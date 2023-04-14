@@ -1,0 +1,42 @@
+// https://leetcode.com/problems/maximum-frequency-stack/solutions/1863567/double-100-two-hashmaps-easy-to-understand/
+use std::collections::HashMap;
+struct FreqStack {
+    map: HashMap<i32, usize>,
+    freq_map: HashMap<usize, Vec<i32>>,
+    max_freq: usize
+}
+
+impl FreqStack {
+
+    fn new() -> Self {
+        Self {
+            map: HashMap::new(),
+            freq_map: HashMap::new(),
+            max_freq: 0
+        }
+    }
+
+    fn push(&mut self, val: i32) {
+        let len = match self.map.get_mut(&val){
+            Some(count) => {*count += 1; *count},
+            None => {self.map.insert(val, 1); 1}
+        };
+        self.max_freq = self.max_freq.max(len);
+        match self.freq_map.get_mut(&len){
+            Some(vec) => {vec.push(val);},
+            None => {self.freq_map.insert(len, vec![val]);}
+        }
+    }
+
+    fn pop(&mut self) -> i32 {
+        let max_freq = self.max_freq;
+        let vec = self.freq_map.get_mut(&max_freq).unwrap();
+        let last = vec.pop().unwrap();
+        if vec.is_empty(){
+            self.max_freq -= 1;
+        }
+        *self.map.get_mut(&last).unwrap() -= 1;
+
+        last
+    }
+}

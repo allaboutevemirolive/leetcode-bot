@@ -1,0 +1,47 @@
+// https://leetcode.com/problems/data-stream-as-disjoint-intervals/solutions/2837742/just-a-runnable-solution/
+struct SummaryRanges {
+    s: std::collections::BTreeSet<i32>,
+}
+
+
+/** 
+ * `&self` means the method takes an immutable reference.
+ * If you need a mutable reference, change it to `&mut self` instead.
+ */
+impl SummaryRanges {
+
+    fn new() -> Self {
+        SummaryRanges { s: std::collections::BTreeSet::new() }
+    }
+    
+    fn add_num(&mut self, value: i32) {
+        self.s.insert(value);
+    }
+    
+    fn get_intervals(&self) -> Vec<Vec<i32>> {
+        let mut v = Vec::new();
+        let mut curr = -1;
+        let mut t = -1;
+        for x in self.s.iter() {
+            if curr == -1 {
+                t = *x;
+                curr = *x;
+            } else if curr + 1 == *x {
+                curr += 1;
+            } else {
+                v.push(vec![t, curr]);
+                t = *x;
+                curr = *x;
+            }
+        }
+        v.push(vec![t, curr]);
+        v
+    }
+}
+
+/**
+ * Your SummaryRanges object will be instantiated and called as such:
+ * let obj = SummaryRanges::new();
+ * obj.add_num(value);
+ * let ret_2: Vec<Vec<i32>> = obj.get_intervals();
+ */

@@ -1,0 +1,64 @@
+// https://leetcode.com/problems/lfu-cache/solutions/3123094/prelude-based-nothing-special/
+use std::collections::{HashMap, VecDeque};
+
+struct LFUCache {
+    size: usize,
+    k2vc: HashMap<i32, (i32, i32)>, //value and its access frequency per key
+    c2queue: HashMap<i32, VecDeque<i32>>, // key -> queue of keys of the same frequency, in arrival/update order 
+    min_freq: i32, //the known minimal occupied frequency, for eviction purposes
+}
+
+/** 
+ * `&self` means the method takes an immutable reference.
+ * If you need a mutable reference, change it to `&mut self` instead.
+ */
+impl LFUCache {
+    fn new(capacity: i32) -> Self {
+        LFUCache {
+            size: capacity as usize,
+            k2vc: HashMap::new(), 
+            c2queue: HashMap::new(), 
+            min_freq: 1,
+        }
+    }
+    
+    fn get(&mut self, key: i32) -> i32 {
+        if self.size == 0 { return -1; } //looking at the constraints, capacity 0 is valid, but with fixed behaviour
+        if let Some(tpl) = self.k2vc.get_mut(&key) {
+            let queue = self.c2queue.get_mut(&tpl.1).unwrap(); //lookup the frequency queue; should not panic
+            queue.retain(|x| { *x != key}); //find and remove the key from the last frequency, as we will increment the frequency and bookkeep in the next frequency's queue
+            if queue.is_empty() { //if this is the last element, remove the whole frequency queue. Need to update what we know of the min frequency too.
+                self.c2queue.remove(&tpl.1);
+                if self.min_freq == tpl.1 { //adjusting the new known minimum to the next frequency - otherwise the known minimum is lower anyway. 
+                    self.min_freq = tpl.1 + 1;
+                }
+            }
+            tpl.1 += 1;
+            self.c2queue.entry(tpl.1).or_insert_with(|| VecDeque::new()).push_front(key); //push the key into the new frequency queue
+            tpl.0
+        } else {
+            -1
+        }
+    }
+    
+    fn put(&mut self, key: i32, value: i32) {
+        if self.size == 0 { return; } //looking at the constraints, capacity 0 is valid, but noop
+        if let Some(tpl) = self.k2vc.get_mut(&key) { //existing
+            tpl.0 = value;
+            self.get(key); //update the frequencies as an access.
+        } else { //non-existing
+            if self.k2vc.len() == self.size { //evict from the minimum frequency queue, if necessary
+                let min_freq_queue = self.c2queue.get_mut(&self.min_freq).unwrap(); //should not panic
+                let eviction_key = min_freq_queue.pop_back().unwrap(); //getting the oldest of the same frequency; should not panic
+                if min_freq_queue.is_empty() {
+                    self.c2queue.remove(&self.min_freq);
+                }
+                self.k2vc.remove(&eviction_key);
+            }
+
+            self.k2vc.insert(key, (value, 1)); //insert a new element with frequency 1
+            self.c2queue.entry(1).or_insert_with(|| VecDeque::new()).push_front(key); //update the frequency 1 queue
+            self.min_freq = 1; //known min frequency back to 1
+        }
+    }
+}

@@ -1,0 +1,40 @@
+// https://leetcode.com/problems/data-stream-as-disjoint-intervals/solutions/3108217/direct-implementation-using-vec-binary-search-or-btreeset/
+struct SummaryRanges {
+    list: Vec<i32>
+}
+
+impl SummaryRanges {
+
+    fn new() -> Self {
+        Self {list: Vec::new()}
+
+    }
+    
+    fn add_num(&mut self, value: i32) {
+        if let Err(i) = self.list.binary_search(&value) {
+            self.list.insert(i, value);
+        }
+    }
+    
+    fn get_intervals(&self) -> Vec<Vec<i32>> {
+        let mut ret = vec![];
+        let mut current_interval = None;
+        for n in &self.list {
+            if let Some((start, last)) = current_interval {
+                if *n == last + 1 {
+                    current_interval = Some((start, *n));
+                } else {
+                    ret.push(vec![start, last]);
+                    current_interval = Some((*n, *n));
+                }
+            } else {
+                current_interval = Some((*n, *n));
+            }
+        }
+        if let Some((start, last)) = current_interval {
+            ret.push(vec![start, last]);
+        }
+
+        ret
+    }
+}
