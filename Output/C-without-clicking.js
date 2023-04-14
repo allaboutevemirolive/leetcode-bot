@@ -2,8 +2,27 @@ const { chromium } = require('playwright');
 const fs = require('fs');
 
 (async () => {
-    const browser = await chromium.launch();
+    const browser = await chromium.launch({ headless: false });
     const page = await browser.newPage();
+
+    const text_file = 'LeetCode-Hard-Page-4.txt'
+
+    const target_link = 'https://leetcode.com/problemset/all/?difficulty=HARD&page=4';
+
+    const target_language_class = 'language-rust';
+
+    // language-cpp
+    // language-java
+    // language-python
+    // language-rust
+
+    // for some reason, python3 was label as language-java. Need to check again
+    // python3 was label as language-java???
+    // language-cpp
+    // sometimes cpp also label as language-java
+
+    // at this point, maybe we can just check the title's solution instead of the label.
+    
 
     const matches = fs.readFileSync('LeetCode-Hard-Page-4.txt', 'utf8').trim().split('\n');
 
@@ -27,61 +46,40 @@ const fs = require('fs');
         mapping[match] = formattedTitle;
         const folderName = formattedTitleWithDash;
 
-        const targetUrl = match + "solutions/?orderBy=newest_to_oldest";
-        await page.goto(targetUrl);
-        await page.waitForTimeout(3000);
-
-        // Base case: If the question for premium user, we can't get the solution
+        // Base case:
+        // Not all solution tag with rust. 
+        // Instead of clicking button, we can just seacrh for rust in the search bar
         try {
-            const button_tag = await page.$('#headlessui-popover-button-\\:R6aa9j9l5t6\\:');
-            await button_tag.click();
-        } catch (error) {
-            console.log('Button not found or not clickable within 5 seconds');
+            const targetUrl = match + "solutions/?orderBy=newest_to_oldest";;
+            await page.goto(targetUrl);
+
+            await page.waitForTimeout(3000);
+
+            const searchInput = await page.$('input[type="text"][placeholder="Search"]');
+            await searchInput.fill('rust');
+
+            await page.waitForTimeout(5000);
+
+        } catch (err) {
+            console.log(err);
+            console.log('Page not found. Not premium user');
             continue;
         }
 
-        // expand button
-        // Base case: 
-        // - If the there's only few solution's option and "target" button is not there
-        // - Question probably about database
-        // - What if the solution available but there is no expand button?
         try {
-            const button_expand = await page.$('.text-blue-s.dark\\:text-dark-blue-s.cursor-pointer.text-md.font-medium.hover\\:underline', { visible: true, timeout: 5000 });
-            await button_expand.click();
-        } catch (error) {
-            // rust button
-            try {
-                const button_rust = await page.$('span.inline-flex.items-center.px-2.whitespace-nowrap.text-xs.leading-6.rounded-full.text-label-3.dark\\:text-dark-label-3.bg-fill-3.dark\\:bg-dark-fill-3.cursor-pointer.transition-all.hover\\:bg-fill-2.dark\\:hover\\:bg-dark-fill-2:has-text("Rust")', { visible: true, timeout: 5000 });
-                await button_rust.click();
-            } catch (error) {
-                console.log('Button not found or not clickable within 5 seconds');
-                continue;
-            }
+            // sort button
+            const button_sort = await page.$('#headlessui-menu-button-\\:Rqaa9j9l5t6\\:');
+            await button_sort.click();
+
+            // most recent button
+            const button_recent = await page.$('div.truncate:has-text("Most Recent")');
+            await button_recent.click();
+        } catch (err) {
+            console.log(err);
+            console.log('No sort button');
         }
 
 
-        // rust button
-        try {
-            const button_rust = await page.$('span.inline-flex.items-center.px-2.whitespace-nowrap.text-xs.leading-6.rounded-full.text-label-3.dark\\:text-dark-label-3.bg-fill-3.dark\\:bg-dark-fill-3.cursor-pointer.transition-all.hover\\:bg-fill-2.dark\\:hover\\:bg-dark-fill-2:has-text("Rust")', { visible: true, timeout: 5000 });
-            await button_rust.click();
-        } catch (error) {
-            console.log('Button not found or not clickable within 5 seconds');
-            continue;
-        }
-
-
-
-        // sort button
-        const button_sort = await page.$('#headlessui-menu-button-\\:Rqaa9j9l5t6\\:');
-        await button_sort.click();
-
-        // most recent button
-        const button_recent = await page.$('div.truncate:has-text("Most Recent")');
-        await button_recent.click();
-
-        await page.waitForTimeout(3000);
-
-        // scrap links to recent post's solution
         const links = await page.$$eval('a[href*="/problems/"]', links =>
             links.filter(link => {
                 const row = link.closest('div[class="relative flex w-full gap-4 px-5 py-3 transition-[background] duration-500"]');
@@ -91,6 +89,7 @@ const fs = require('fs');
         );
 
         console.log('Links scraped');
+
 
         for (const link of links) {
             // link

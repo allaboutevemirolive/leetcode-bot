@@ -1,0 +1,157 @@
+nemesis@nemesis:~/Documents/GitHub/leetcode-bot/Output$ node C-without-clicking.js
+https://leetcode.com/problems/couples-holding-hands/
+Links scraped
+Rust button is visible or there is only one language
+File couples-holding-hands2321149 saved inside 0765.Couples-Holding-Hands folder.
+Rust button is visible or there is only one language
+File couples-holding-hands853835 saved inside 0765.Couples-Holding-Hands folder.
+https://leetcode.com/problems/max-chunks-to-make-sorted-ii/
+Links scraped
+Rust button is visible or there is only one language
+File max-chunks-to-make-sorted-ii1490139 saved inside 0768.Max-Chunks-To-Make-Sorted-II folder.
+Rust button is visible or there is only one language
+File max-chunks-to-make-sorted-ii1627562 saved inside 0768.Max-Chunks-To-Make-Sorted-II folder.
+Rust button is visible or there is only one language
+File max-chunks-to-make-sorted-ii2624110 saved inside 0768.Max-Chunks-To-Make-Sorted-II folder.
+Rust button is visible or there is only one language
+Error occurred while saving data ${reconstructedString}
+Link: ${link}
+https://leetcode.com/problems/basic-calculator-iv/
+Links scraped
+Rust button is visible or there is only one language
+File basic-calculator-iv1141959 saved inside 0770.Basic-Calculator-IV folder.
+https://leetcode.com/problems/sliding-puzzle/
+Links scraped
+Rust button is visible or there is only one language
+File sliding-puzzle873598 saved inside 0773.Sliding-Puzzle folder.
+Rust button is visible or there is only one language
+File sliding-puzzle1548888 saved inside 0773.Sliding-Puzzle folder.
+Rust button is visible or there is only one language
+File sliding-puzzle3280454 saved inside 0773.Sliding-Puzzle folder.
+https://leetcode.com/problems/reaching-points/
+Links scraped
+Rust button is visible or there is only one language
+File reaching-points391867 saved inside 0780.Reaching-Points folder.
+https://leetcode.com/problems/transform-to-chessboard/
+Links scraped
+Rust button is visible or there is only one language
+File transform-to-chessboard1487590 saved inside 0782.Transform-to-Chessboard folder.
+Rust button is visible or there is only one language
+File transform-to-chessboard1487839 saved inside 0782.Transform-to-Chessboard folder.
+https://leetcode.com/problems/preimage-size-of-factorial-zeroes-function/
+Links scraped
+Rust button is visible or there is only one language
+File preimage-size-of-factorial-zeroes-function740549 saved inside 0793.Preimage-Size-of-Factorial-Zeroes-Function folder.
+https://leetcode.com/problems/smallest-rotation-with-highest-score/
+Links scraped
+Rust button is visible or there is only one language
+File smallest-rotation-with-highest-score1996118 saved inside 0798.Smallest-Rotation-with-Highest-Score folder.
+https://leetcode.com/problems/minimum-swaps-to-make-sequences-increasing/
+Links scraped
+Rust button is visible or there is only one language
+File minimum-swaps-to-make-sequences-increasing962584 saved inside 0801.Minimum-Swaps-To-Make-Sequences-Increasing folder.
+Rust button is visible or there is only one language
+File minimum-swaps-to-make-sequences-increasing827698 saved inside 0801.Minimum-Swaps-To-Make-Sequences-Increasing folder.
+Rust button is visible or there is only one language
+File minimum-swaps-to-make-sequences-increasing2308152 saved inside 0801.Minimum-Swaps-To-Make-Sequences-Increasing folder.
+Rust button is visible or there is only one language
+File minimum-swaps-to-make-sequences-increasing1302319 saved inside 0801.Minimum-Swaps-To-Make-Sequences-Increasing folder.
+Rust button is visible or there is only one language
+File minimum-swaps-to-make-sequences-increasing633415 saved inside 0801.Minimum-Swaps-To-Make-Sequences-Increasing folder.
+https://leetcode.com/problems/bricks-falling-when-hit/
+Links scraped
+Rust button is visible or there is only one language
+File bricks-falling-when-hit2252748 saved inside 0803.Bricks-Falling-When-Hit folder.
+https://leetcode.com/problems/split-array-with-same-average/
+Links scraped
+Rust button is visible or there is only one language
+File split-array-with-same-average2598855 saved inside 0805.Split-Array-With-Same-Average folder.
+Rust button is visible or there is only one language
+File split-array-with-same-average2729667 saved inside 0805.Split-Array-With-Same-Average folder.
+https://leetcode.com/problems/chalkboard-xor-game/
+Links scraped
+Rust button is visible or there is only one language
+File chalkboard-xor-game1032219 saved inside 0810.Chalkboard-XOR-Game folder.
+Rust button is visible or there is only one language
+File chalkboard-xor-game3306254 saved inside 0810.Chalkboard-XOR-Game folder.
+https://leetcode.com/problems/consecutive-numbers-sum/
+Links scraped
+Rust button is visible or there is only one language
+File consecutive-numbers-sum1083165 saved inside 0829.Consecutive-Numbers-Sum folder.
+Rust button is visible or there is only one language
+Error occurred while saving data ${reconstructedString}
+Link: ${link}
+https://leetcode.com/problems/rectangle-area-ii/
+Links scraped
+Rust button is visible or there is only one language
+File rectangle-area-ii763659 saved inside 0850.Rectangle-Area-II folder.
+Rust button is visible or there is only one language
+File rectangle-area-ii218078 saved inside 0850.Rectangle-Area-II folder.
+Rust button is visible or there is only one language
+File rectangle-area-ii1671762 saved inside 0850.Rectangle-Area-II folder.
+https://leetcode.com/problems/k-similar-strings/
+Links scraped
+Rust button is visible or there is only one language
+File k-similar-strings3042670 saved inside 0854.K-Similar-Strings folder.
+Rust button is visible or there is only one language
+File k-similar-strings409380 saved inside 0854.K-Similar-Strings folder.
+https://leetcode.com/problems/profitable-schemes/
+Links scraped
+Rust button is visible or there is only one language
+File profitable-schemes828340 saved inside 0879.Profitable-Schemes folder.
+Rust button is visible or there is only one language
+File profitable-schemes3273195 saved inside 0879.Profitable-Schemes folder.
+https://leetcode.com/problems/sum-of-subsequence-widths/
+Links scraped
+Rust button is visible or there is only one language
+File sum-of-subsequence-widths2839218 saved inside 0891.Sum-of-Subsequence-Widths folder.
+https://leetcode.com/problems/valid-permutations-for-di-sequence/
+Links scraped
+Rust button is visible or there is only one language
+File valid-permutations-for-di-sequence494725 saved inside 0903.Valid-Permutations-for-DI-Sequence folder.
+https://leetcode.com/problems/number-of-music-playlists/
+Links scraped
+Rust button is visible or there is only one language
+File number-of-music-playlists2038058 saved inside 0920.Number-of-Music-Playlists folder.
+Rust button is visible or there is only one language
+File number-of-music-playlists549735 saved inside 0920.Number-of-Music-Playlists folder.
+Rust button is visible or there is only one language
+File number-of-music-playlists829369 saved inside 0920.Number-of-Music-Playlists folder.
+https://leetcode.com/problems/minimize-malware-spread/
+Links scraped
+Rust button is visible or there is only one language
+File minimize-malware-spread741463 saved inside 0924.Minimize-Malware-Spread folder.
+Rust button is visible or there is only one language
+File minimize-malware-spread222033 saved inside 0924.Minimize-Malware-Spread folder.
+Rust button is visible or there is only one language
+File minimize-malware-spread2652498 saved inside 0924.Minimize-Malware-Spread folder.
+https://leetcode.com/problems/three-equal-parts/
+Links scraped
+Rust button is visible or there is only one language
+File three-equal-parts1343847 saved inside 0927.Three-Equal-Parts folder.
+Rust button is visible or there is only one language
+File three-equal-parts1343882 saved inside 0927.Three-Equal-Parts folder.
+Rust button is visible or there is only one language
+File three-equal-parts1343547 saved inside 0927.Three-Equal-Parts folder.
+Rust button is visible or there is only one language
+File three-equal-parts222775 saved inside 0927.Three-Equal-Parts folder.
+Rust button is visible or there is only one language
+File three-equal-parts1354250 saved inside 0927.Three-Equal-Parts folder.
+Rust button is visible or there is only one language
+File three-equal-parts1343278 saved inside 0927.Three-Equal-Parts folder.
+https://leetcode.com/problems/minimize-malware-spread-ii/
+Links scraped
+Rust button is visible or there is only one language
+File minimize-malware-spread-ii893474 saved inside 0928.Minimize-Malware-Spread-II folder.
+Rust button is visible or there is only one language
+File minimize-malware-spread-ii2651307 saved inside 0928.Minimize-Malware-Spread-II folder.
+https://leetcode.com/problems/distinct-subsequences-ii/
+Links scraped
+Rust button is visible or there is only one language
+File distinct-subsequences-ii956987 saved inside 0940.Distinct-Subsequences-II folder.
+https://leetcode.com/problems/tallest-billboard/
+Links scraped
+Rust button is visible or there is only one language
+File tallest-billboard522024 saved inside 0956.Tallest-Billboard folder.
+Rust button is visible or there is only one language
+File tallest-billboard925586 saved inside 0956.Tallest-Billboard folder.
