@@ -1,0 +1,37 @@
+// https://leetcode.com/problems/find-median-from-data-stream/solutions/2807341/two-heaps-a-b/
+use std::collections::BinaryHeap;
+
+struct MedianFinder {
+    A: BinaryHeap<i32>,
+    B: BinaryHeap<i32>,
+}
+
+impl MedianFinder {
+
+    fn new() -> Self {
+        MedianFinder {
+            A: BinaryHeap::new(),
+            B: BinaryHeap::new(),
+        }
+    }
+    
+    fn add_num(&mut self, mut num: i32) {
+        if self.A.len() > self.B.len() {
+            self.A.push(num);
+            num = self.A.pop().unwrap();
+            self.B.push(-1 * num);
+        } else {
+            self.B.push(-1 * num);
+            num = -1 * self.B.pop().unwrap();
+            self.A.push(num);
+        }
+    }
+    
+    fn find_median(&self) -> f64 {
+        if self.A.len() > self.B.len() {
+            *self.A.peek().unwrap() as f64
+        } else {
+            (*self.A.peek().unwrap() + -1 * *self.B.peek().unwrap()) as f64 / 2.0
+        }
+    }
+}

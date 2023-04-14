@@ -1,0 +1,76 @@
+// https://leetcode.com/problems/integer-to-english-words/solutions/2765470/0ms-solution/
+struct Solution;
+
+impl Solution {
+    const WORD_TABLE: [&'static str; 28] = [
+        "Zero",
+        "One",
+        "Two",
+        "Three",
+        "Four",
+        "Five",
+        "Six",
+        "Seven",
+        "Eight",
+        "Nine",
+        "Ten",
+        "Eleven",
+        "Twelve",
+        "Thirteen",
+        "Fourteen",
+        "Fifteen",
+        "Sixteen",
+        "Seventeen",
+        "Eighteen",
+        "Nineteen",
+        "Twenty",
+        "Thirty",
+        "Forty",
+        "Fifty",
+        "Sixty",
+        "Seventy",
+        "Eighty",
+        "Ninety",
+    ];
+    const GROUP_TABLE: [&'static str; 3] = [" Billion", " Million", " Thousand"];
+    const GROUP_VALUES: [i32; 3] = [1000000000, 1000000, 1000];
+    fn do_hundred(out: &mut String, mut num: i32) {
+        if num >= 100 {
+            out.push_str(Self::WORD_TABLE[(num / 100) as usize]);
+            out.push_str(" Hundred");
+            num %= 100;
+            if num == 0 {
+                return;
+            }
+            out.push(' ');
+        }
+        if num > 20 {
+            out.push_str(Self::WORD_TABLE[(20 + (num - 20) / 10) as usize]);
+            if num % 10 != 0 {
+                out.push(' ');
+                out.push_str(Self::WORD_TABLE[(num % 10) as usize]);
+            }
+        } else {
+            out.push_str(Self::WORD_TABLE[num as usize]);
+        }
+    }
+    pub fn number_to_words(num: i32) -> String {
+        let mut num = num;
+        let mut out = String::new();
+        let mut base: i32;
+        for i in 0..3 {
+            base = Self::GROUP_VALUES[i];
+            if num >= base {
+                Self::do_hundred(&mut out, num / base);
+                out.push_str(Self::GROUP_TABLE[i]);
+                num %= base;
+                if num == 0 {
+                    return out;
+                }
+                out.push(' ');
+            }
+        }
+        Self::do_hundred(&mut out, num);
+        out
+    }
+}

@@ -141,9 +141,7 @@ const fs = require('fs');
             } catch (error) {
                 console.log('Error occurred while saving data ${reconstructedString}\nLink: ${link}');
             }
-
         }
-
 
     }
 

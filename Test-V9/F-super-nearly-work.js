@@ -5,13 +5,26 @@ const fs = require('fs');
     const browser = await chromium.launch({ headless: false });
     const page = await browser.newPage();
 
-    const matches = fs.readFileSync('small-sample.txt', 'utf8').trim().split('\n');
+    await page.goto('https://leetcode.com/problemset/all/?difficulty=HARD&page=1');
+
+    await page.waitForTimeout(5000);
+
+    const matches = await page.$$eval('a[href*="/problems/"]', (links) =>
+        links
+            .filter((link) => {
+                const row = link.closest('div[role="row"]');
+                return (
+                    row &&
+                    row.querySelector('a[href*="/problems/"][class="h-5 hover:text-blue-s dark:hover:text-dark-blue-s"]') === link
+                );
+            })
+            .map((link) => link.href)
+    );
 
     const mapping = {};
 
     for (const match of matches) {
-        // mapping our links with the title form leetcode page and rebuild the title with the number
-        // So we only create folder that match with our list of links
+        // we need to roll back to the original page, to load  "element" and "text"
         await page.goto('https://leetcode.com/problemset/all/?difficulty=HARD&page=1');
         await page.waitForTimeout(5000);
 
@@ -25,43 +38,43 @@ const fs = require('fs');
         const number = formattedTitle ? formattedTitle.split('.')[0].padStart(4, '0') : '0000';
         const formattedTitleWithDash = `${number}.${title}`;
         mapping[match] = formattedTitle;
+        // mapping[match] = 4. Median of Two Sorted Arrays
+        // formattedTitleWithDash = 0004.Median-of-Two-Sorted-Arrays
+        // console.log(formattedTitleWithDash);
+        // console.log(mapping[match]);
         const folderName = formattedTitleWithDash;
+        const dataText = '`${number}.${title}`' + '`${number}.${title}`';
+
+        // fs.mkdir(folderName, (err) => {
+        //     if (err && err.code !== 'EEXIST') {
+        //         throw err;
+        //     }
+
+        //     fs.writeFile(`${folderName}/${mapping[match]}.txt`, dataText, (err) => {
+        //         if (err) {
+        //             throw err;
+        //         }
+
+        //         console.log(`File ${mapping[match]}} saved inside ${folderName} folder.`);
+        //     });
+        // });
 
         const targetUrl = match + "solutions/?orderBy=newest_to_oldest";;
         await page.goto(targetUrl);
         await page.waitForTimeout(3000);
 
-        // Base case: If the question for premium user, we can't get the solution
-        try {
-            const button_tag = await page.$('#headlessui-popover-button-\\:R6aa9j9l5t6\\:');
-            await button_tag.click();
-        } catch (error) {
-            console.log('Button not found or not clickable within 5 seconds');
-            continue;
-        }
+        // tag button
+        const button_tag = await page.$('#headlessui-popover-button-\\:R6aa9j9l5t6\\:');
+        await button_tag.click();
 
         // expand button
-        // Base case: If the there's only few solution's option and "target" button is not there
-        //            Question probably about database
-        try {
-            const button_expand = await page.$('.text-blue-s.dark\\:text-dark-blue-s.cursor-pointer.text-md.font-medium.hover\\:underline', { visible: true, timeout: 5000 });
-            await button_expand.click();
-        } catch (error) {
-            console.log('Button not found or not clickable within 5 seconds');
-            continue;
-        }
+        const button_expand = await page.$('.text-blue-s.dark\\:text-dark-blue-s.cursor-pointer.text-md.font-medium.hover\\:underline');
+        await button_expand.click();
 
 
         // rust button
-        try {
-            const button_rust = await page.$('span.inline-flex.items-center.px-2.whitespace-nowrap.text-xs.leading-6.rounded-full.text-label-3.dark\\:text-dark-label-3.bg-fill-3.dark\\:bg-dark-fill-3.cursor-pointer.transition-all.hover\\:bg-fill-2.dark\\:hover\\:bg-dark-fill-2:has-text("Rust")', { visible: true, timeout: 5000 });
-            await button_rust.click();
-        } catch (error) {
-            console.log('Button not found or not clickable within 5 seconds');
-            continue;
-        }
-
-
+        const button_rust = await page.$('span.inline-flex.items-center.px-2.whitespace-nowrap.text-xs.leading-6.rounded-full.text-label-3.dark\\:text-dark-label-3.bg-fill-3.dark\\:bg-dark-fill-3.cursor-pointer.transition-all.hover\\:bg-fill-2.dark\\:hover\\:bg-dark-fill-2:has-text("Rust")');
+        await button_rust.click();
 
         // sort button
         const button_sort = await page.$('#headlessui-menu-button-\\:Rqaa9j9l5t6\\:');
@@ -73,7 +86,7 @@ const fs = require('fs');
 
         await page.waitForTimeout(3000);
 
-        // scrap links to recent post's solution
+
         const links = await page.$$eval('a[href*="/problems/"]', links =>
             links.filter(link => {
                 const row = link.closest('div[class="relative flex w-full gap-4 px-5 py-3 transition-[background] duration-500"]');
@@ -120,6 +133,7 @@ const fs = require('fs');
                         if (err) {
                             throw err;
                         }
+
                         console.log(`File ${reconstructedString} saved inside ${formattedTitleWithDash} folder.`);
                     });
                 });
@@ -128,6 +142,7 @@ const fs = require('fs');
                 console.log('Error occurred while saving data ${reconstructedString}\nLink: ${link}');
             }
         }
+
     }
 
     await new Promise(() => { });
