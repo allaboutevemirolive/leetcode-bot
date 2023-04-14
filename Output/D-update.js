@@ -5,10 +5,11 @@ const fs = require('fs');
     const browser = await chromium.launch({ headless: false });
     const page = await browser.newPage();
 
-    const text_file = 'LeetCode-Hard-Page-4.txt'
+    const text_file = 'LeetCode-Hard-Page-5.txt'
 
-    const target_link = 'https://leetcode.com/problemset/all/?difficulty=HARD&page=4';
+    const target_link = 'https://leetcode.com/problemset/all/?difficulty=HARD&page=5';
 
+    // waitForSelector method with multiple selectors separated by commas will wait until at least one of the selectors is found on the page
     const target_language_class = '.language-rust, .language-python, .language-java, .language-cpp';
 
     // language-cpp
