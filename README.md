@@ -18,6 +18,6 @@ Bot for automate scrap, test and update of each LeetCode's solution or even ques
 
 > 3. Solution's updater
 
-`Description` : Automatically Scrap best submission in terms of Runtime and Memory performance. 
+`Description` : Automatically Scrap best submission in terms of `Runtime` and `Memory` performance. 
 
 `Status` : Not started yet
