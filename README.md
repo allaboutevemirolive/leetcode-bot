@@ -42,9 +42,11 @@ I'm lazy to write documentation.
 
 But when you want to run the code, there is 2 things you need to have, `txt` and `link` like below
 
+```rust
 const text_file = 'LeetCode-Hard-Page-1.txt'
 
 const target_link = 'https://leetcode.com/problemset/all/?difficulty=HARD&page=1';
+```
 
 ## Curious? Catch me up on social media :
 
