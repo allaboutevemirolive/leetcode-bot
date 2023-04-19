@@ -1,0 +1,98 @@
+// https://leetcode.com/problems/sudoku-solver/solutions/1667312/rust-solution/
+use std::collections::HashSet;
+use std::collections::HashMap;
+
+struct Cell {
+    r: usize,
+    c: usize,
+    v: Vec<char>
+}
+
+impl Solution {
+    fn solve(board: &mut Vec<Vec<char>>, cells: &Vec<Cell>, i: usize,
+        R: &mut Vec<HashSet<char>>,
+        C: &mut Vec<HashSet<char>>,
+        B: &mut Vec<HashSet<char>>) -> bool
+    {
+        if i == cells.len() {
+            return true;
+        }
+        let r = cells[i].r;
+        let c = cells[i].c;  
+        for v in cells[i].v.iter() {
+            let b = r/3 * 3 + c/3;
+            let mut F = (R[r].remove(v), C[c].remove(v), B[b].remove(v));
+            if F.0 && F.1 && F.2 {
+                // if this candidate char was present in the row, col, and box sets
+                board[r][c] = *v;
+                if Solution::solve(board, cells, i+1, R, C, B) {
+                    return true;
+                }
+            }
+            // backtrack by inserting the candidate where it removed
+            if F.0 { R[r].insert(*v); }
+            if F.1 { C[c].insert(*v); }
+            if F.2 { B[b].insert(*v); }
+        }
+        false
+    }
+    
+    pub fn solve_sudoku(board: &mut Vec<Vec<char>>) {
+        let D: HashSet<char> = vec!['1','2','3','4','5','6','7','8','9']
+            .into_iter().collect();
+        
+        let mut R: Vec<HashSet<char>> = vec![HashSet::new(); 9]; // rows
+        let mut C: Vec<HashSet<char>> = vec![HashSet::new(); 9]; // cols
+        let mut B: Vec<HashSet<char>> = vec![HashSet::new(); 9]; // boxes
+        
+        // initialize the row, col, and box sets of missing chars
+        for i in 0..9 {
+            R[i] = D.clone();
+            C[i] = D.clone();
+            B[i] = D.clone();
+            for j in 0..9 {
+                if board[i][j] != '.' {
+                    R[i].remove(&board[i][j]);
+                }
+                if board[j][i] != '.' {
+                    C[i].remove(&board[j][i]);
+                }
+            }
+            for r in 0..3 {
+                for c in 0..3 {
+                    if board[i/3*3+r][i%3*3+c] != '.' {
+                        B[i].remove(&board[i/3*3+r][i%3*3+c]);
+                    }
+                }
+            }
+        }
+
+        // build a list of candidate chars for each empty cell
+        let mut cells: Vec<Cell> = Vec::new();
+        for r in 0..9 {
+            for c in 0..9 {
+                if board[r][c] == '.' {
+                    let b = r/3*3+c/3;
+                    let S = R[r].intersection(&C[c]).map(|x| *x)
+                            .collect::<HashSet<char>>()
+                            .intersection(&B[b]).map(|x| *x)
+                            .collect::<Vec<char>>();
+                    if S.len() > 1 {
+                        cells.push(Cell{
+                            r: r, c: c, 
+                            v: S.clone()
+                        });
+                    } else {
+                        board[r][c] = *S.iter().next().unwrap();
+                        R[r].remove(&board[r][c]);
+                        C[c].remove(&board[r][c]);
+                        B[b].remove(&board[r][c]);
+                    }
+                }
+            }
+        }
+        
+        // solve with backtracking
+        Solution::solve(board, &cells, 0, &mut R, &mut C, &mut B);
+    }
+}

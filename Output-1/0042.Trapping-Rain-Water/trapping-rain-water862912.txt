@@ -1,0 +1,14 @@
+// https://leetcode.com/problems/trapping-rain-water/solutions/862912/rust-solution-with-stack/
+        let mut stack = VecDeque::<usize>::new();
+        let mut rain = 0;
+        for (i, h) in height.iter().enumerate() {
+            while !stack.is_empty() && height[*stack.back().unwrap()] <= *h {
+                let ch = height[stack.pop_back().unwrap()];
+                rain += stack
+                    .back()
+                    .map(|&bi| (h.min(&height[bi]) - ch) * (i - bi - 1) as i32)
+                    .unwrap_or(0);
+            }
+            stack.push_back(i);
+        }
+        rain

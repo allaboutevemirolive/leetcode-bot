@@ -1,0 +1,36 @@
+// https://leetcode.com/problems/first-missing-positive/solutions/387661/rust-0ms-solution/
+struct Solution {}
+impl Solution {
+    fn insert(n: i32, nums: &mut Vec<i32>) {
+        let t = n as usize;
+        if n > 0 && t <= nums.len() && n != nums[t - 1] {
+            let k = nums[t - 1];
+            nums[t - 1] = n;
+            Self::insert(k, nums);
+        }
+    }
+    pub fn first_missing_positive(nums: Vec<i32>) -> i32 {
+        let mut copy_nums = nums.clone();
+        for c in nums {
+            Self::insert(c, &mut copy_nums);
+        }
+
+        for i in 0..copy_nums.len() {
+            let tmp = (i + 1) as i32;
+            if tmp != copy_nums[i] {
+                return tmp;
+            }
+        }
+        (copy_nums.len() + 1) as i32
+    }
+}
+fn main() {
+    assert_eq!(
+        3,
+        Solution::first_missing_positive(vec![7, 8, 9, 11, 1, 2, -1]),
+    );
+    assert_eq!(3, Solution::first_missing_positive(vec![1, 2, 0]));
+    assert_eq!(3, Solution::first_missing_positive(vec![1, 2]));
+    assert_eq!(1, Solution::first_missing_positive(vec![-1]));
+    assert_eq!(2, Solution::first_missing_positive(vec![1]));
+}

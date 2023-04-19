@@ -1,0 +1,24 @@
+// https://leetcode.com/problems/trapping-rain-water/solutions/2592984/rust-simple-o-n-solution/
+impl Solution {
+    pub fn trap(height: Vec<i32>) -> i32 {
+        
+        let mut mins: Vec<i32> = vec![0; height.len()];
+        let mut max_h = 0;
+        let mut total = 0;
+        
+        for i in 0..height.len() {
+            max_h = max_h.max(height[i]);
+            mins[i] = max_h;
+        }
+        
+        max_h = 0;
+        
+        for i in (0..height.len()).rev() {
+            max_h = max_h.max(height[i]);
+            total += mins[i].min(max_h) - height[i];
+        }
+
+        return total;
+        
+    }
+}

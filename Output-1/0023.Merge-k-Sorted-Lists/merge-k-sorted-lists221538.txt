@@ -1,0 +1,37 @@
+// https://leetcode.com/problems/merge-k-sorted-lists/solutions/221538/rust-4ms-no-clone/
+use std::cmp::Ordering;
+use std::collections::BinaryHeap;
+
+impl PartialOrd<ListNode> for ListNode {
+    fn partial_cmp(&self, other: &ListNode) -> Option<Ordering> {
+        other.val.partial_cmp(&self.val)
+    }
+}
+
+impl Ord for ListNode {
+    fn cmp(&self, other: &Self) -> Ordering {
+        other.val.cmp(&self.val)
+    }
+}
+
+impl Solution {
+    #[allow(dead_code)]
+    pub fn merge_k_lists(lists: Vec<Option<Box<ListNode>>>) -> Option<Box<ListNode>> {
+        let mut heap = BinaryHeap::new();
+        for mut node in lists {
+            if node.is_some() {
+                heap.push(node.take()?)
+            }
+        }
+        let mut head = heap.pop()?;
+        let mut pointer = &mut head;
+        while !heap.is_empty() {
+            if pointer.next.is_some() {
+                heap.push(pointer.next.take()?);
+            }
+            pointer.next = Some(heap.pop()?);
+            pointer = pointer.next.as_mut()?;
+        }
+        Some(head)
+    }
+}

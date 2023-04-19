@@ -1,0 +1,44 @@
+// https://leetcode.com/problems/merge-k-sorted-lists/solutions/677976/rust-with-heap/
+impl Solution {
+    pub fn merge_k_lists(lists: Vec<Option<Box<ListNode>>>) -> Option<Box<ListNode>> {
+        // Create dummy node to simplify iteration
+        let mut return_list: Option<Box<ListNode>> = Some(Box::new(ListNode::new(0)));
+        let mut current_node = return_list.as_mut().unwrap();
+        
+        // Create heap
+        let mut heap = lists
+            .into_iter()
+            .fold(BinaryHeap::new(),
+                |mut heap, new_list_head| {
+                    if let Some(mut node) = new_list_head {
+                        heap.push(Reverse(node));
+                    };
+                    heap
+                }
+            );
+        
+		// Take smallest node in heap and replace until all are gone
+        while let Some(Reverse(mut next_node)) = heap.pop() {
+            let replacement_node_in_heap = next_node.next.take();
+            if let Some(replacement_node) = replacement_node_in_heap {
+                heap.push(Reverse(replacement_node));
+            };
+            current_node.next = Some(next_node);
+            current_node = current_node.next.as_mut().unwrap();    
+        }
+        // Skip dummy node
+        return_list.unwrap().next
+    }
+}
+
+impl PartialOrd for ListNode {
+    fn partial_cmp(&self, other: &ListNode) -> Option<Ordering> {
+        self.val.partial_cmp(&other.val)
+    }
+}
+
+impl Ord for ListNode {
+    fn cmp(&self, other: &ListNode) -> Ordering {
+        self.val.cmp(&other.val)
+    }
+}

@@ -1,0 +1,49 @@
+// https://leetcode.com/problems/n-queens/solutions/2107852/rust-bfs-solution-with-bit-manipulation/
+
+impl Solution {
+    pub fn solve_n_queens(n: i32) -> Vec<Vec<String>> {
+        let next = |prev: Vec<Vec<u16>>| -> Vec<Vec<u16>> {
+            (0..n as u16).map(|i| 1 << i).enumerate().fold(vec![], |mut acc, (i, row)| {
+                prev.iter().filter(|&board| is_valid(board, row)).cloned().for_each(|mut board| {
+                    board.push(row);
+                    acc.push(board);
+                });
+                acc
+            })
+        };
+
+        fn is_valid(board: &Vec<u16>, new_row: u16) -> bool {
+            if board.iter().any(|r| r & new_row > 0) {
+                return false;
+            }
+
+            let mut l = new_row;
+            let mut r = new_row;
+            for row in board.iter().rev() {
+                l <<= 1;
+                r >>= 1;
+                if row & l > 0 || row & r > 0 {
+                    return false;
+                }
+            }
+            true
+        }
+
+        let format = |row: &u16| -> String {
+            let binary_str = format!("{:0>n$b}", row, n = n as usize);
+            binary_str.chars().map(|c| match c {
+                '0' => '.',
+                '1' => 'Q',
+                _ => 'x'
+            }).collect()
+        };
+
+        (0..n)
+            .fold(vec![vec![]], |acc, _| next(acc))
+            .iter()
+            .map(|board| board.iter()
+                .map(|row| format(row))
+                .collect::<Vec<_>>())
+            .collect()
+    }
+}

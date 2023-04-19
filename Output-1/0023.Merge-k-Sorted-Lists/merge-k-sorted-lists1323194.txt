@@ -1,0 +1,58 @@
+// https://leetcode.com/problems/merge-k-sorted-lists/solutions/1323194/rust-converting-to-vector/
+// Definition for singly-linked list.
+// #[derive(PartialEq, Eq, Clone, Debug)]
+// pub struct ListNode {
+//   pub val: i32,
+//   pub next: Option<Box<ListNode>>
+// }
+// 
+// impl ListNode {
+//   #[inline]
+//   fn new(val: i32) -> Self {
+//     ListNode {
+//       next: None,
+//       val
+//     }
+//   }
+// }
+impl Solution {
+    pub fn merge_k_lists(lists: Vec<Option<Box<ListNode>>>) -> Option<Box<ListNode>> {
+        let mut result = vec![];
+        for list in &lists {
+            result.extend_from_slice(&linked_list_to_vec(list));
+        }
+        result.sort();
+        //println!("result = {:?}", result);
+        vec_to_linked_list(&result)
+    }
+}
+
+fn linked_list_to_vec(list : &Option<Box<ListNode>>) -> Vec<i32> {
+    if list.is_none() {
+        return vec![];
+    }
+    let mut result = vec![];
+    let mut head = list.as_ref();
+    while head != None {
+        let current = head.unwrap();
+        result.push(current.val);
+        head = current.next.as_ref();
+    }
+    result
+}
+
+fn vec_to_linked_list(vec : &Vec<i32>) -> Option<Box<ListNode>> {
+    if vec.is_empty() {
+        return None;
+    }
+    let mut head = Some(Box::new(ListNode::new(vec[0])));
+    let mut current = head.as_mut();
+    for i in 1..vec.len() {
+        let node = ListNode::new(vec[i]);
+        if let Some(current_node) = current {
+            current_node.next = Some(Box::new(node));
+            current = current_node.next.as_mut();
+        }        
+    }
+    head
+}

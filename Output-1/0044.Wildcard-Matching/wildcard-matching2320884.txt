@@ -1,0 +1,80 @@
+// https://leetcode.com/problems/wildcard-matching/solutions/2320884/rust-recursive-dp-with-memoization/
+impl Solution {
+    pub fn is_match(s: String, p: String) -> bool {
+        let compressed_p = wildcard_compress(p.as_bytes());
+
+		let mut mem = vec![vec![None; compressed_p.len() + 1]; s.len() + 1];
+		match_recursive(s.as_bytes(), &compressed_p, 0, 0, &mut mem)
+    }
+}
+
+/// Compress consecutive '*'
+fn wildcard_compress(p: &[u8]) -> Vec<u8> {
+    let mut new_p = vec![];
+    new_p.reserve(p.len());
+
+    let mut last_wild = false;
+    for &byte in p.iter() {
+        if byte == b'*' {
+            if !last_wild {
+                last_wild = true;
+                new_p.push(byte);
+            }
+        }
+        else {
+            last_wild = false;
+            new_p.push(byte);
+        }
+    }
+
+    new_p
+}
+
+/// Recursive dp with memoization
+fn match_recursive(
+    s: &[u8],
+    p: &[u8],
+    s_idx: usize,
+    p_idx: usize,
+    mem: &mut Vec<Vec<Option<bool>>>,
+) -> bool {
+    if let Some(result) = mem[s_idx][p_idx] {
+        return result; // if result already exist, return it
+    }
+
+    // Store result
+    mem[s_idx][p_idx] = Some(
+        if p_idx >= p.len() {
+            s_idx >= s.len() // If p has been exhausted, return if s has been exhausted
+        }
+        else if s_idx >= s.len() {
+            // If s has been exhausted but p has not, p[p_idx..p.len()] must all be b'*'
+            if p[p_idx] == b'*' {
+                match_recursive(s, p, s_idx, p_idx + 1, mem)
+            }
+            else {
+                false
+            }
+        }
+        else if s[s_idx] == p[p_idx] || p[p_idx] == b'?' {
+            // If sequences match so far, check further
+            match_recursive(s, p, s_idx + 1, p_idx + 1, mem)
+        }
+        else if p[p_idx] == b'*' {
+            // If p[p_idx] is *
+            // Check possibility of:
+            //  '*' does not contain current character,
+            //  '*' contains current character and no more,
+            //  '*' contains current character and more
+            // Right-hand operand is only evaluated when left-hand returns false
+            match_recursive(s, p, s_idx, p_idx + 1, mem)
+                || match_recursive(s, p, s_idx + 1, p_idx + 1, mem)
+                || match_recursive(s, p, s_idx + 1, p_idx, mem)
+        }
+        else {
+            false
+        },
+    );
+
+    mem[s_idx][p_idx].unwrap()
+}

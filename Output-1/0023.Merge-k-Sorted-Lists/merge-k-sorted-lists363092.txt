@@ -1,0 +1,40 @@
+// https://leetcode.com/problems/merge-k-sorted-lists/solutions/363092/simple-rust-4ms/
+impl Solution {
+    pub fn merge_k_lists(lists: Vec<Option<Box<ListNode>>>) -> Option<Box<ListNode>> {
+        // extract all the list node values and merge them into a vector
+        let mut node_vals: Vec<i32> = lists
+            .iter()
+            .map(Self::make_vec) // each listnode converted to a vector
+            .flatten() // flatten the vectors into a single vector
+            .collect();
+        // sort the vector
+        node_vals.sort_unstable();
+        // turn the vector back into a listnode
+        Self::make_listnode(&node_vals)
+    }
+
+    pub fn make_listnode(node_vals: &[i32]) -> Option<Box<ListNode>> {
+        if node_vals.is_empty() {
+            None
+        } else {
+            let mut node = ListNode::new(*node_vals.last().unwrap());
+            for i in (0..node_vals.len() - 1).rev() {
+                let mut n = ListNode::new(node_vals[i]);
+                n.next = Some(Box::new(node));
+                node = n;
+            }
+            Some(Box::new(node))
+        }
+    }
+
+    pub fn make_vec(ln: &Option<Box<ListNode>>) -> Vec<i32> {
+        let mut v: Vec<i32> = vec![];
+        let mut n = ln;
+
+        while let Some(node) = n {
+            v.push(node.val);
+            n = &node.next;
+        }
+        v
+    }
+}

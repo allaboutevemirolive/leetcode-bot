@@ -1,0 +1,30 @@
+// https://leetcode.com/problems/first-missing-positive/solutions/320404/an-easy-to-understand-o-n-solution-in-rust/
+impl Solution {
+    pub fn first_missing_positive(nums: Vec<i32>) -> i32 {
+        let n = nums.len() as i32;
+        let nums = nums
+            .into_iter()
+            .filter(|x| *x <= n + 1 && *x > 0)
+            .collect::<Vec<i32>>();
+        if nums.is_empty() {
+            return 1;
+        }
+        let max = nums.iter().max().unwrap();
+        let min = nums.iter().min().unwrap();
+
+        if *min > 1 {
+            return 1;
+        }
+        let mut t = vec![0; (max - min) as usize + 2];
+        for n in &nums {
+            t[(*n - min + 1) as usize] = 1;
+        }
+
+        for i in 1..t.len() {
+            if t[i] == 0 {
+                return i as i32;
+            }
+        }
+        max + 1
+    }
+}

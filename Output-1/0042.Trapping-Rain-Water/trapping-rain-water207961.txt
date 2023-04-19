@@ -1,0 +1,22 @@
+// https://leetcode.com/problems/trapping-rain-water/solutions/207961/rust/
+fn trap(heights: Vec<i32>) -> i32 {
+    let forward = running_max(heights.iter().cloned());
+    let backward = running_max(heights.iter().rev().cloned())
+        .collect::<Vec<_>>()
+        .into_iter()
+        .rev();
+
+    forward
+        .zip(backward)
+        .map(|(l, r)| l.min(r))
+        .zip(heights.iter())
+        .map(|(w, &h)| w - h)
+        .sum()
+}
+
+fn running_max(iter: impl Iterator<Item = i32>) -> impl Iterator<Item = i32> {
+    iter.scan(0, |a, b| {
+        *a = (*a).max(b);
+        Some(*a)
+    })
+}

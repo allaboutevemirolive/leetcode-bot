@@ -1,0 +1,46 @@
+// https://leetcode.com/problems/sudoku-solver/solutions/3200009/painful-rust/
+impl Solution {
+    pub fn solve_sudoku(board: &mut Vec<Vec<char>>) {
+        Self::backtrack(board, 0, 0);
+    }
+
+    fn backtrack(board: &mut Vec<Vec<char>>, row: usize, col: usize) -> bool {
+        if col == 9 {
+            return Self::backtrack(board, row + 1, 0);
+        }
+        if row == 9 {
+            return true;
+        }
+        if board[row][col] != '.' {
+            return Self::backtrack(board, row, col + 1);
+        }
+        for num in 1..=9 {
+            let ch = char::from_digit(num, 10).unwrap();
+            if Self::is_valid(board, row, col, ch) {
+                board[row][col] = ch;
+                if Self::backtrack(board, row, col + 1) {
+                    return true;
+                }
+                board[row][col] = '.';
+            }
+        }
+        false
+    }
+
+    fn is_valid(board: &Vec<Vec<char>>, row: usize, col: usize, ch: char) -> bool {
+        for i in 0..9 {
+            if board[row][i] == ch {
+                return false;
+            }
+            if board[i][col] == ch {
+                return false;
+            }
+            let subbox_row = 3 * (row / 3) + i / 3;
+            let subbox_col = 3 * (col / 3) + i % 3;
+            if board[subbox_row][subbox_col] == ch {
+                return false;
+            }
+        }
+        true
+    }
+}

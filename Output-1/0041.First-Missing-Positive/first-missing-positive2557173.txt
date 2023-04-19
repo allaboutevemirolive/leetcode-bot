@@ -1,0 +1,16 @@
+// https://leetcode.com/problems/first-missing-positive/solutions/2557173/rust-binary-search/
+impl Solution {
+    pub fn first_missing_positive(nums: Vec<i32>) -> i32 {
+        let mut lim: i32 = *nums.iter().max().unwrap().max(&0);
+        let mut o: Vec<i32> = nums.clone();
+        o.sort();
+        
+        for i in 1..lim {
+            if let Err(_) = o.binary_search(&(i as i32)) {
+                return i as i32;
+            }
+        }
+        
+        lim + 1
+    }
+}

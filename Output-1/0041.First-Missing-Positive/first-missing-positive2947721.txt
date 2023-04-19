@@ -1,0 +1,27 @@
+// https://leetcode.com/problems/first-missing-positive/solutions/2947721/rust-as-a-python-main-o-1-space/
+use std::mem::swap;
+
+impl Solution {
+    pub fn first_missing_positive(mut nums: Vec<i32>) -> i32 {
+    let mut i: usize = 0;
+    let n = nums.len();
+    let mut i = 0;
+
+    while i < n {
+        let correct = (nums[i]-1) as usize;
+
+        if correct >= 0 && correct < n && nums[i] != nums[correct] {
+            nums.swap(i, correct);
+        } else {
+            i += 1;
+        }
+    }
+
+    for i in 0..n {
+        if nums[i] != (i + 1) as i32 {
+            return (i+1) as i32;
+        }
+    }
+    (n + 1) as i32
+}
+}
