@@ -2,7 +2,7 @@ const { chromium } = require('playwright');
 const fs = require('fs');
 
 (async () => {
-    const browser = await chromium.launch({ headless: false });
+    const browser = await chromium.launch();
     const page = await browser.newPage();
 
     const text_file = 'LeetCode-Hard-Page-1.txt'
@@ -22,35 +22,24 @@ const fs = require('fs');
         console.log('match: ' + match);
 
         const string1 = match;
-        console.log('string1: ' + string1);
 
         const string2 = `a[href="${new URL(string1).pathname}"]`;
-        console.log('string2: ' + string2);
 
         const element = await page.$(string2);
-        console.log('element: ' + element);
 
         const text = await element.innerText();
-        console.log('text: ' + text);
 
         const formattedTitle = text.trim().replace(/\n/g, '. ');
-        console.log('formattedTitle: ' + formattedTitle);
 
         const title = formattedTitle ? formattedTitle.split('.')[1].trim().replace(/^-+|-+$/g, '').replace(/ /g, '-') : 'unknown';
-        console.log('title: ' + title);
 
         const number = formattedTitle ? formattedTitle.split('.')[0].padStart(4, '0') : '0000';
-        console.log('number: ' + number);
 
         const formattedTitleWithDash = `${number}.${title}`;
-        console.log('formattedTitleWithDash: ' + formattedTitleWithDash);
 
         mapping[match] = formattedTitle;
-        console.log('mapping: ' + mapping);
 
         const folderName = formattedTitleWithDash;
-        console.log('folderName: ' + folderName);
-
 
         try {
             const targetUrl = match + "solutions/?orderBy=newest_to_oldest";;
@@ -91,35 +80,23 @@ const fs = require('fs');
 
         console.log('Links scraped');
 
-
         for (const link of links) {
+
             await page.goto(link);
             await page.waitForTimeout(3000);
 
-            console.log('link: ' + link);
-
             const pathSegments = link.split('/').filter(str => str !== "");
-            console.log('pathSegments: ' + pathSegments);
 
             // We need to change "-" to "_" to follow the naming convention
             const problemName = pathSegments[pathSegments.indexOf("problems") + 1];
-            console.log('problemName: ' + problemName);
-
-
-
             const updatedProblemName = problemName.replace(/-/g, '_');
 
-
-
             const solutionId = pathSegments[pathSegments.indexOf("solutions") + 1];
-            console.log('solutionId: ' + solutionId);
-
 
             const reconstructedString = `${updatedProblemName}${solutionId}`;
-            console.log('reconstructedString: ' + reconstructedString);
-
 
             const rustButton = await page.$('div.relative.cursor-pointer.px-3.py-3.text-label-4.dark\\:text-dark-label-4.hover\\:text-label-1.dark\\:hover\\:text-dark-label-1.GMIHh:has-text("Rust")');
+            
             if (rustButton) {
                 await rustButton.click();
                 console.log('Clicked Rust hidden button / there is more than one language');
@@ -128,12 +105,11 @@ const fs = require('fs');
             }
 
             try {
+
                 const dataElement = await page.waitForSelector(target_language_class);
                 await page.waitForTimeout(3000);
                 const dataText = await dataElement.innerText();
                 await page.waitForTimeout(3000);
-
-
 
                 fs.mkdir(folderName, (err) => {
                     if (err && err.code !== 'EEXIST') {
@@ -153,6 +129,6 @@ const fs = require('fs');
             }
         }
     }
-
+    
     await new Promise(() => { });
 })();

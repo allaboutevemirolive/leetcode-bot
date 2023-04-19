@@ -1,9 +1,0 @@
-// https://leetcode.com/problems/first-missing-positive/solutions/2563900/rust-simple-easy-solution/
-impl Solution {
-    pub fn first_missing_positive(nums: Vec<i32>) -> i32 {
-        let mut nums_copy = nums.to_vec(); // mutable copy for in-place sorting
-        nums_copy.sort_unstable(); // unstable sort b/c order of duplicates does not need to be preserved, saves from allocating
-        
-        nums_copy.iter().fold(1, |miss, num| if miss == *num {miss + 1} else {miss}) // reducer function
-	}
-}
