@@ -1,2 +1,4 @@
+https://leetcode.com/problems/stone-game-viii/
+https://leetcode.com/problems/minimum-xor-sum-of-two-arrays/
 https://leetcode.com/problems/minimum-skips-to-arrive-at-meeting-on-time/
 https://leetcode.com/problems/minimum-space-wasted-from-packaging/

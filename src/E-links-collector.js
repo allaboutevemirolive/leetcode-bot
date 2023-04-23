@@ -26,7 +26,7 @@ const fs = require('fs');
                 .map((link) => link.href)
         );
 
-        file_name = 'LeetCode-Hard-Page-' + i ;
+        const file_name = 'LeetCode-Hard-Page-' + i ;
 
         fs.writeFile(`${file_name}.txt`, matches.join('\n'), (err) => {
             if (err) {
