@@ -62,11 +62,21 @@ async function languageFiller(page, search_lang) {
 
 async function folderPageNotFound(folder_page_not_found) {
     console.log('No links found');
-    fs.mkdir(folder_page_not_found, (err) => {
-        if (err && err.code !== 'EEXIST') {
-            throw err;
-        }
-    });
+
+    const folderPath = `${__dirname}/${folder_page_not_found}`;
+    const filePath = `${folderPath}/emptyFile.txt`;
+
+    try {
+        // Create the folder if it doesn't exist
+        fs.mkdirSync(folderPath, { recursive: true });
+
+        // Write to the file
+        fs.writeFileSync(filePath, `// nothing`);
+
+        console.log(`File 'emptyFile' saved inside ${folder_page_not_found} folder.`);
+    } catch (err) {
+        console.error(`Error writing to file: ${err}`);
+    }
 }
 
 
