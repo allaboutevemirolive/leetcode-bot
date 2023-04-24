@@ -1,22 +1,26 @@
 # leetcode-bot
 Bot for automate scrap, test and update of each LeetCode's solution or even questions.
 
+## Usage
+
+Simply run the command `npm install` in the root directory of the project, and all the dependencies listed in the file will be installed automatically.
+___
 
 ## Ongoing task:
 
-> 1. Solution's Scraper 
+1. Solution's Scraper 
 
 `Description` : Scrap solution from other submission
 
 `Status` : Ongoing
 
-> 2. Solution's submission
+2. Solution's submission
 
 `Description` : Automatically submit new solution that appear in each folder(Downloaded)
 
 `Status` : Not started yet
 
-> 3. Solution's updater
+3. Solution's updater
 
 `Description` : Automatically Scrap best submission in terms of `Runtime` and `Memory` performance. 
 
@@ -24,9 +28,11 @@ Bot for automate scrap, test and update of each LeetCode's solution or even ques
 
 ___
 
-# Bug fixed as of `19 April 2023`
+## Bug fixed as of 
 
-> programming language's file naming convention(.rs, .java, .py)
+> `19 April 2023`
+
+Programming language's file naming convention(.rs, .java, .py)
 
 - Implement underscore " _ " instead of dash " - ". 
 
@@ -34,9 +40,14 @@ Eg.
 ```
 median_of_two_sorted_arrays468977.rs
 ```
+
+> `24 April 2023`
+
+Seperate code by its function
+- For maintainability and readability purpose, I decided to seperate code by its function.
 ___
 
-# Documentation
+## Documentation
 
 I'm lazy to write documentation.
 

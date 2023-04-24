@@ -1,0 +1,22 @@
+{
+  "name": "leetcode-bot",
+  "version": "1.0.0",
+  "description": "Script to scrape leetcode's solution",
+  "main": "Main.js",
+  "dependencies": {
+    "playwright": "^1.32.3"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/allaboutevemirolive/RustyLeet.git"
+  },
+  "author": "allaboutevemirolive",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/allaboutevemirolive/RustyLeet/issues"
+  },
+  "homepage": "https://github.com/allaboutevemirolive/RustyLeet#readme"
+}
