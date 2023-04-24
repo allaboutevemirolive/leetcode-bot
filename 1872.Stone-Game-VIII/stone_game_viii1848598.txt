@@ -1,0 +1,17 @@
+// https://leetcode.com/problems/stone-game-viii/solutions/1848598/ruby-faster-than-100-100-rust-port/
+impl Solution {
+    pub fn stone_game_viii(stones: Vec<i32>) -> i32 {
+        let n = stones.len();
+        let mut x = 0;
+        stones
+            .iter()
+            .map(|y| {
+                x += y;
+                x
+            })
+            .collect::<Vec<_>>()[1..n - 1]
+            .iter()
+            .rev()
+            .fold(x, |x, &y| x.max(y - x))
+    }
+}

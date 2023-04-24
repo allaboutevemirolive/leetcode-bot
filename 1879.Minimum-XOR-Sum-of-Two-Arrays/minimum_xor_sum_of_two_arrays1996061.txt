@@ -1,0 +1,93 @@
+// https://leetcode.com/problems/minimum-xor-sum-of-two-arrays/solutions/1996061/o-n-2-n-beats-100-rust-lazy-iterator-bottom-up-dp-solution/
+use std::cmp::min;
+use std::ops::ControlFlow;
+
+struct StateIterator {
+    n0s: usize,
+    n1s: usize,
+    state: Option<usize>,
+}
+
+impl StateIterator {
+    fn new(n0s: usize, n1s: usize) -> Self {
+        Self {
+            n0s,
+            n1s,
+            state: None,
+        }
+    }
+    
+        
+    fn update_state(&mut self) {
+        match format!("{:0width$b}", self.state.unwrap(), width=self.n0s+self.n1s)
+        .chars().rev()
+        .map(|b| b as usize - '0' as usize)
+        .enumerate()
+        .try_fold((usize::MAX, 0, 0), 
+            |(iprev, prevb, ls1s), (i, b)| // Here we try to find the bit position of the least significant bit=0
+            if prevb == 1 && b == 0 { ControlFlow::Break((i, 1, ls1s-1)) } // such that it has a bit 1 to its right
+            else { ControlFlow::Continue((i, b, ls1s + b)) }
+        ) {
+            ControlFlow::Continue(_) => {
+                // If we continued all the way to the end then we have covered all permutations already
+                self.state = None;
+            },
+            ControlFlow::Break((i, _, ls1s)) => { // Otherwise the next permutation will shift this bit-1 to the left
+                // and it will reset the remaining 1s to the right (ls1s = less significant 1s) to be as 
+                // less significant as possible
+                // For eg: if the current state is 001011011100, then the 1 bit in the 16s place needs to be shifted to the left
+                // and the remaining two less significant 1 bits need to be reset to the LSB:
+                // 00101110011
+                self.state.as_mut()
+                .map(|state| {
+                    *state = *state & !((1<<i)-1); // Clear all the lower bits up to bit i (excluded)
+                    *state = *state | (1<<i); // Shift to the left
+                    *state = *state | ((1<<ls1s)-1) // Reset the less significant 1 bits
+                });
+            }
+        }
+    }
+}
+
+impl Iterator for StateIterator {
+    type Item = usize;
+    
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.state.is_none() {
+            // Initial state is set to all 1s grouped together on the right
+            // to generate the smallest number possible
+            // For eg: if n1s = 3 we initialize to 00..0111
+            self.state = Some((1<<self.n1s)-1);
+        } else {
+            self.update_state();
+        }
+        
+        self.state.as_ref().cloned()
+    }
+}
+
+impl Solution {
+    pub fn minimum_xor_sum(nums1: Vec<i32>, nums2: Vec<i32>) -> i32 {
+        let n = nums1.len();
+        let mut state = (1<<n) - 1;
+        let mut memo: Vec<i32> = vec![0; 1<<n];
+        
+        (0..n).for_each(|i| {
+			// For nums1[i] we are allowing for matching with 
+			// (i+1) numbers from nums2 and we need to cover
+			// all possible combinations, which we get from 
+			// StateIterator
+            let mut si = StateIterator::new(n-i-1, i+1);
+            si.for_each(|state| {
+                let res = format!("{state:b}").chars().rev().enumerate()
+                .filter(|&(_, b)| b == '1') // From the LSB (right to left) if bit j is 1 then it means nums[j] is available for matching
+                .fold(i32::MAX, |min_acc, (j, _)|
+                    min(min_acc, (nums1[i]^nums2[j]) + memo[state^(1<<j)])
+                );
+                memo[state] = res;
+            });
+        });
+        
+        memo[(1<<n)-1]
+    }
+}

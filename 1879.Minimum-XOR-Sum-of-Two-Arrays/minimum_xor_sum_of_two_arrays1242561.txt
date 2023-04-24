@@ -1,0 +1,39 @@
+// https://leetcode.com/problems/minimum-xor-sum-of-two-arrays/solutions/1242561/rust-recursion-with-memoization/
+use std::collections::HashMap;
+
+impl Solution {
+    pub fn minimum_xor_sum(mut nums1: Vec<i32>, mut nums2: Vec<i32>) -> i32 {
+        let mut mem = HashMap::new();
+        let mask = (1 << nums1.len()) - 1;
+        
+        sub(&nums1, &nums2, mask, &mut mem)
+    }
+}
+
+fn sub(nums1: &Vec<i32>, nums2: &Vec<i32>, mask: u32, mem: &mut HashMap<u32, i32>) -> i32 {
+    if let Some(result) = mem.get(&mask).copied() {
+        return result;
+    }
+    
+    if mask.count_ones() == 0 {
+        return 0;
+    }
+    
+    let idx1 = (mask.count_ones() - 1) as usize;
+    
+    let mut min_sum = core::i32::MAX;
+    
+    for idx2 in 0..nums2.len() {
+        let idx_mask = 1 << idx2;
+        
+        if (mask & idx_mask) != 0 {
+            let new_mask = mask & (!idx_mask);
+            let sum = (nums1[idx1] ^ nums2[idx2]) + sub(nums1, nums2, new_mask, mem);
+            min_sum = std::cmp::min(min_sum, sum);
+        }
+    }
+    
+    mem.insert(mask, min_sum);
+    
+    min_sum
+}
