@@ -4,7 +4,7 @@ Bot for automate scrap, test and update of each LeetCode's solution or even ques
 ## Usage
 
 Simply run the command `npm install` in the root directory of the project, and all the dependencies listed in the file will be installed automatically.
-___
+
 
 ## Ongoing task:
 
@@ -26,7 +26,6 @@ ___
 
 `Status` : Not started yet
 
-___
 
 ## Bug fixed as of 
 
@@ -45,7 +44,6 @@ median_of_two_sorted_arrays468977.rs
 
 Seperate code by its function
 - For maintainability and readability purpose, I decided to seperate code by its function.
-___
 
 ## Documentation
 
