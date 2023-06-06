@@ -96,7 +96,7 @@ async function scrapEachSolutionLink(page) {
 
     const links = await page.$$eval('a[href*="/problems/"]', links =>
         links.filter(link => {
-            const row = link.closest('div[class="hover:bg-fill-4 dark:hover:bg-dark-fill-4 relative flex w-full cursor-pointer gap-4 px-4 py-4"]');
+            const row = link.closest('div[class="relative flex w-full gap-4 px-5 py-3 transition-[background] duration-500"]');
             return row && row.querySelector('a[href*="/problems/"]') === link;
         })
             .map(link => link.href)
@@ -148,7 +148,7 @@ async function copySolutionToClipboard(page, target_language_class) {
 
 async function writeToFile(folder_dash, link, copied_solution, file_txt_underscore) {
     const folderPath = `${__dirname}/${folder_dash}`;
-    const filePath = `${folderPath}/${file_txt_underscore}.rs`;
+    const filePath = `${folderPath}/${file_txt_underscore}.txt`;
 
     try {
         // Create the folder if it doesn't exist
